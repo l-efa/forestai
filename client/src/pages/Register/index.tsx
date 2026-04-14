@@ -18,8 +18,9 @@ export default function Register() {
   const [password2, setPassword2] = useState("");
   const [accepted, setAccepted] = useState(false);
 
-  const [register, { isLoading, error, isSuccess }] = useRegisterUserMutation();
+  const [register, { isLoading, isSuccess }] = useRegisterUserMutation();
   const [credentialError, setCredentialError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const toggleAccepted = () => {
@@ -53,7 +54,21 @@ export default function Register() {
 
     setCredentialError(null);
 
-    await register({ email, username, password });
+    const response = await register({ email, username, password });
+
+    if (response.data) {
+      setSuccessMessage(response.data.message);
+    }
+
+    if (response.error) {
+      if ("data" in response.error) {
+        setCredentialError(
+          (response.error.data as { message: string }).message,
+        );
+      } else {
+        setCredentialError("Network error, please check your connection");
+      }
+    }
   };
 
   return (
@@ -111,11 +126,8 @@ export default function Register() {
           {credentialError && !isLoading && (
             <p className="text-xs text-red-400">{credentialError}</p>
           )}
-          {error && !isLoading && (
-            <p className="text-xs text-red-400">Registration failed</p>
-          )}
-          {isSuccess && (
-            <p className="text-xs text-forest-400">Account created!</p>
+          {isSuccess && successMessage && (
+            <p className="text-xs text-forest-400">{successMessage}</p>
           )}
           <p className="text-xs text-content-muted">
             Already have an account?{" "}
