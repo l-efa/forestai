@@ -2,16 +2,18 @@ import "dotenv/config";
 import express from "express";
 import router from "./router";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
-var corsOptions = {
+const corsOptions = {
   origin: "http://localhost:5173",
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  credentials: true,
 };
 
 const app = express();
 
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 app.use("/api", router);
 

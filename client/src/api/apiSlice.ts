@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 // All endpoints inject into this — they share the cache and tags.
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000/api" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000/api", credentials: "include" }),
   tagTypes: ["User"],
   endpoints: () => ({}), // empty — features inject their own
 });

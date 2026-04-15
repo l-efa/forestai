@@ -6,6 +6,17 @@ type registerType = {
   password: string;
 };
 
+type loginType = {
+  username: string;
+  password: string;
+  remember: boolean;
+};
+
+type me = {
+  username: string;
+  userId: string;
+};
+
 // injectEndpoints adds these to the shared apiSlice
 // so they share the same cache, tags, and baseQuery
 const authApi = apiSlice.injectEndpoints({
@@ -15,7 +26,18 @@ const authApi = apiSlice.injectEndpoints({
       // When registration succeeds, refetch anything tagged "User"
       invalidatesTags: ["User"],
     }),
+
+    loginUser: builder.mutation<{ message: string }, loginType>({
+      query: (body) => ({ url: "/auth/login", method: "POST", body }),
+      invalidatesTags: ["User"],
+    }),
+
+    getMe: builder.query<me, void>({
+      query: () => ({ url: "/auth/me", method: "GET" }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
-export const { useRegisterUserMutation } = authApi;
+export const { useRegisterUserMutation, useLoginUserMutation, useGetMeQuery } =
+  authApi;

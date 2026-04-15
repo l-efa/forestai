@@ -3,23 +3,55 @@ import Button2 from "@/components/Button2";
 import Card from "@/components/Card";
 import InputField from "@/components/InputField";
 import Switch from "@/components/Switch";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { useGetMeQuery, useLoginUserMutation } from "@/api/auth";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
 
+  const [credentialError, setCredentialError] = useState<string | null>(null);
+
+  const [login, { isLoading, isSuccess }] = useLoginUserMutation();
+  const {
+    data: getMe,
+    isLoading: meLoading,
+    isSuccess: meSuccess,
+  } = useGetMeQuery();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (getMe) {
+      navigate("/dashboard");
+    }
+  }, [getMe, navigate]);
+
   const toggleRemember = () => {
     setRemember((prev) => !prev);
   };
 
-  const Log = () => {
-    console.log("Logged in!");
-  };
+  const loginUser = async () => {
+    if (!username || !password) {
+      setCredentialError("All fields are required");
+      return;
+    }
+    setCredentialError(null);
+    const response = await login({ username, password, remember });
 
-  console.log(remember);
+    if (response.error) {
+      if ("data" in response.error) {
+        setCredentialError(
+          (response.error.data as { message: string }).message,
+        );
+      } else {
+        setCredentialError("Network error, please check your connection");
+      }
+    }
+  };
 
   return (
     <div className="flex h-screen items-center justify-center px-4">
@@ -44,6 +76,9 @@ export default function Login() {
             handleChange={setPassword}
             className="w-[75%]"
           />
+          {credentialError && !isLoading && (
+            <p className="w-[75%] text-xs text-red-400">{credentialError}</p>
+          )}
           <div className="flex w-[75%] items-center justify-between">
             <Switch
               checked={remember}
@@ -60,7 +95,11 @@ export default function Login() {
               Forgot password?
             </a>
           </div>
-          <Button2 name="Log in" changeHandler={Log} className="w-[75%]" />
+          <Button2
+            name="Log in"
+            changeHandler={loginUser}
+            className="w-[75%]"
+          />
           <div className="flex w-[75%] items-center gap-3">
             <hr className="flex-1 border-content-faint" />
             <span className="text-xs text-content-faint">OR</span>
@@ -68,8 +107,9 @@ export default function Login() {
           </div>
           <Button
             name="Login with Google"
-            changeHandler={Log}
+            changeHandler={loginUser}
             className="w-[75%]"
+            disabled={true}
           />
           <p className="text-xs text-content-muted">
             Don't have an account?{" "}
