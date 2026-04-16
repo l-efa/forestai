@@ -29,7 +29,7 @@ export default function Register() {
 
   useEffect(() => {
     if (isSuccess) {
-      setTimeout(() => navigate("/"), 1500);
+      setTimeout(() => navigate("/", { replace: true }), 1500);
     }
   }, [isSuccess, navigate]);
 

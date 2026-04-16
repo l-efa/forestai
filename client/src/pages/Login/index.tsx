@@ -26,7 +26,7 @@ export default function Login() {
 
   useEffect(() => {
     if (getMe) {
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     }
   }, [getMe, navigate]);
 
@@ -99,6 +99,7 @@ export default function Login() {
             name="Log in"
             changeHandler={loginUser}
             className="w-[75%]"
+            disabled={isLoading}
           />
           <div className="flex w-[75%] items-center gap-3">
             <hr className="flex-1 border-content-faint" />

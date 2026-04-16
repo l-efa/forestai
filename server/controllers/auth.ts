@@ -102,7 +102,6 @@ const Login = async (request: Request, response: Response) => {
 };
 
 const Me = async (request: Request, response: Response) => {
-  console.log(request.user);
   return response.status(200).json(request.user);
 };
 
