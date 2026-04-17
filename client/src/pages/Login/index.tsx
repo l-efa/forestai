@@ -25,10 +25,10 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (getMe) {
+    if (meSuccess && getMe) {
       navigate("/dashboard", { replace: true });
     }
-  }, [getMe, navigate]);
+  }, [meSuccess, getMe, navigate]);
 
   const toggleRemember = () => {
     setRemember((prev) => !prev);

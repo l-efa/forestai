@@ -17,6 +17,7 @@ export default {
           dark: "#0a0a0b", // card outer
           card: "#1c1c1e", // card / input background
           knob: "#d4d4d4", // switch knob bottom
+          active: "rgba(16,185,129,0.1)", // active sidebar item bg
           border: "rgba(255,255,255,0.15)", // subtle borders
           divider: "rgba(255,255,255,0.10)", // faint borders / separators
         },

@@ -13,7 +13,7 @@ export default function SidebarItem({ name, url }: sidebarType) {
     <>
       <Link
         to={url}
-        className={`rounded-lg border border-transparent p-1 text-sm hover:bg-surface-card ${isActive ? "bg-surface-card text-content-primary" : "text-content-secondary"}`}
+        className={`rounded-lg border border-transparent p-2 text-sm ${isActive ? "bg-surface-active text-forest-400" : "text-content-secondary hover:bg-surface-card"}`}
       >
         {name}
       </Link>

@@ -36,8 +36,17 @@ const authApi = apiSlice.injectEndpoints({
       query: () => ({ url: "/auth/me", method: "GET" }),
       providesTags: ["User"],
     }),
+
+    logoutUser: builder.mutation<{ message: string }, void>({
+      query: () => ({ url: "/auth/logout", method: "POST" }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useGetMeQuery } =
-  authApi;
+export const {
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useGetMeQuery,
+  useLogoutUserMutation,
+} = authApi;

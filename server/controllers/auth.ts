@@ -105,4 +105,14 @@ const Me = async (request: Request, response: Response) => {
   return response.status(200).json(request.user);
 };
 
-export default { Register, Login, Me };
+const Logout = async (request: Request, response: Response) => {
+  response.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "strict",
+  });
+
+  return response.status(200).json({ message: "Logged out" });
+};
+
+export default { Register, Login, Me, Logout };
