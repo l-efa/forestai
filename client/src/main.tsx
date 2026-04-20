@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { DarkModeProvider } from "./context/DarkMode.tsx";
+import { UserProvider } from "./context/UserContext.tsx";
 import Router from "./router.tsx";
 
 createRoot(document.getElementById("root")!).render(
@@ -12,7 +13,9 @@ createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <BrowserRouter>
         <DarkModeProvider>
-          <Router />
+          <UserProvider>
+            <Router />
+          </UserProvider>
         </DarkModeProvider>
       </BrowserRouter>
     </Provider>

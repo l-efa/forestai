@@ -6,7 +6,8 @@ import Switch from "@/components/Switch";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { useGetMeQuery, useLoginUserMutation } from "@/api/auth";
+import { useLoginUserMutation } from "@/api/auth";
+import { useUserContext } from "@/context/UserContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -15,20 +16,22 @@ export default function Login() {
 
   const [credentialError, setCredentialError] = useState<string | null>(null);
 
-  const [login, { isLoading, isSuccess }] = useLoginUserMutation();
-  const {
-    data: getMe,
-    isLoading: meLoading,
-    isSuccess: meSuccess,
-  } = useGetMeQuery();
+  const [login, { isLoading }] = useLoginUserMutation();
+  const { user, isError } = useUserContext();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (meSuccess && getMe) {
+    if (user && !isError) {
       navigate("/dashboard", { replace: true });
     }
-  }, [meSuccess, getMe, navigate]);
+  }, [user, isError, navigate]);
+
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      loginUser();
+    }
+  };
 
   const toggleRemember = () => {
     setRemember((prev) => !prev);
@@ -54,7 +57,10 @@ export default function Login() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center px-4">
+    <div
+      className="flex h-screen items-center justify-center px-4"
+      onKeyDown={onKeyDown}
+    >
       <Card className="w-[90%] min-w-[300px] max-w-[400px] gap-6 py-8">
         <div className="flex flex-col items-center text-center">
           <h1 className="p-6 text-2xl font-bold tracking-widest text-forest-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.5)]">

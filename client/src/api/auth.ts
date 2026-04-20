@@ -1,3 +1,4 @@
+import type { User } from "@/types/User";
 import { apiSlice } from "./apiSlice";
 
 type registerType = {
@@ -10,11 +11,6 @@ type loginType = {
   username: string;
   password: string;
   remember: boolean;
-};
-
-type me = {
-  username: string;
-  userId: string;
 };
 
 // injectEndpoints adds these to the shared apiSlice
@@ -32,7 +28,7 @@ const authApi = apiSlice.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
-    getMe: builder.query<me, void>({
+    getMe: builder.query<User, void>({
       query: () => ({ url: "/auth/me", method: "GET" }),
       providesTags: ["User"],
     }),

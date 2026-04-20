@@ -1,13 +1,15 @@
 import { Outlet } from "react-router-dom";
+import { useState } from "react";
 
 import SidebarItem from "./SidebarItem";
-import { useState } from "react";
 import UserMenu from "./UserMenu";
+
 import { LayoutDashboard, Component, Building2 } from "lucide-react";
+import { useUserContext } from "@/context/UserContext";
 
 const siderbarlinks = [
   { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { name: "Organizations", url: "/organizations", icon: Building2 },
+  { name: "Organizations", url: "/organization", icon: Building2 },
   { name: "Component test", url: "/components", icon: Component },
 ];
 
@@ -17,6 +19,8 @@ export default function Dashboard() {
   const handleUserMenuClick = () => {
     setOpenUserMenu((prev) => !prev);
   };
+
+  const { user } = useUserContext();
   return (
     <div className="flex h-screen">
       <aside className="hidden w-72 flex-col gap-2 border-r border-surface-border lg:flex">
@@ -38,9 +42,9 @@ export default function Dashboard() {
             onClick={handleUserMenuClick}
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-forest-700 text-sm font-bold text-content-primary">
-              D
+              {user?.username?.[0]?.toUpperCase() ?? "?"}
             </div>
-            <span className="text-sm">Dew</span>
+            <span className="text-sm">{user?.username ?? "?"}</span>
           </button>
         </div>
       </aside>

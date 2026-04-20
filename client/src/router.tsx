@@ -1,17 +1,20 @@
 import { Routes, Route } from "react-router-dom";
+
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ComponentTestPage from "./pages/ComponentTestPage";
 import Register from "./pages/Register";
 
 // DASHBOARD
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
-import Settings from "./pages/Settings";
 import DashboardView from "./pages/DashboardView";
 
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import User from "./pages/User/User";
 import OrganizationView from "./pages/OrganizationView";
+import Organization from "./pages/OrganizationView/Organization";
+
+import User from "./pages/User/User";
+import Settings from "./pages/Settings";
 
 export default function Router() {
   return (
@@ -28,7 +31,8 @@ export default function Router() {
           }
         >
           <Route path="/dashboard" element={<DashboardView />} />
-          <Route path="/organizations" element={<OrganizationView />} />
+          <Route path="/organization" element={<OrganizationView />} />
+          <Route path="/organization/:id" element={<Organization />} />
           <Route path="/components" element={<ComponentTestPage />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/user" element={<User />} />
