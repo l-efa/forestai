@@ -23,4 +23,10 @@ organizationRouter.get(
   organizationController.getOrganization,
 );
 
+organizationRouter.delete(
+  "/:id",
+  authMiddleware,
+  organizationController.deleteOrganization,
+);
+
 export default organizationRouter;

@@ -4,4 +4,8 @@ export type OrganizationType = {
   ownerId: string;
   createdAt: string;
   updatedAt: string;
+  _count: {
+    members: number;
+    projects: number;
+  };
 };
