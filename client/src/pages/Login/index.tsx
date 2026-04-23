@@ -61,7 +61,7 @@ export default function Login() {
       className="flex h-screen items-center justify-center px-4"
       onKeyDown={onKeyDown}
     >
-      <Card className="w-[90%] min-w-[300px] max-w-[400px] gap-6 py-8">
+      <Card className="w-[90%] min-w-[300px] max-w-[400px] gap-6 rounded-xl py-8 shadow-cardDrop shadow-cardGlow">
         <div className="flex flex-col items-center text-center">
           <h1 className="p-6 text-2xl font-bold tracking-widest text-forest-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.5)]">
             ForestAI

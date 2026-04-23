@@ -40,6 +40,14 @@ const getOwnedOrganizations = async (request: Request, response: Response) => {
       where: {
         ownerId: id,
       },
+      include: {
+        _count: {
+          select: {
+            members: true,
+            projects: true,
+          },
+        },
+      },
     });
 
     return response.status(200).json(organizations);

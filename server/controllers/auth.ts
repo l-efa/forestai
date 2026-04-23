@@ -102,7 +102,26 @@ const Login = async (request: Request, response: Response) => {
 };
 
 const Me = async (request: Request, response: Response) => {
-  return response.status(200).json(request.user);
+  const id = request.user?.id;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        profileColor: true,
+      },
+    });
+
+    return response.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ message: "Something went wrong" });
+  }
 };
 
 const Logout = async (request: Request, response: Response) => {

@@ -1,15 +1,13 @@
 import type { ReactNode } from "react";
 
 interface CardProps {
-  children: ReactNode | null;
+  children: ReactNode;
   className?: string;
 }
 
 export default function Card({ children, className = "" }: CardProps) {
   return (
-    <section
-      className={`max-w-md rounded-xl bg-darkGloss p-4 shadow-cardDrop shadow-cardGlow ${className}`}
-    >
+    <section className={`bg-darkGloss p-4 ${className}`}>
       {children}
     </section>
   );

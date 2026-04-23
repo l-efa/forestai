@@ -6,6 +6,7 @@ import UserMenu from "./UserMenu";
 
 import { LayoutDashboard, Component, Building2 } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
+import { avatarColors } from "@/utils/avatarColors";
 
 const siderbarlinks = [
   { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -41,7 +42,9 @@ export default function Dashboard() {
             className="flex w-full items-center gap-3 border-t border-surface-border p-2 text-left"
             onClick={handleUserMenuClick}
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-forest-700 text-sm font-bold text-content-primary">
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-content-primary ${avatarColors[user?.profileColor ?? "green"]}`}
+            >
               {user?.username?.[0]?.toUpperCase() ?? "?"}
             </div>
             <span className="text-sm">{user?.username ?? "?"}</span>

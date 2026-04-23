@@ -19,11 +19,12 @@ export default function OrganizationView() {
   };
 
   return (
-    <div>
+    <div className="p-2">
       <p>Organizations</p>
       <Button2
         name="Create organization"
         changeHandler={() => setShowModal(true)}
+        className="rounded-none"
       />
 
       <div className="flex flex-row"></div>

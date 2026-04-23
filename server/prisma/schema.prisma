@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  organizations Organization[]
-  projects Project[]
-  orgMemberShips OrganizationMember[]
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  username           String   @unique
+  password           String
+  profileColor       String   @default("green")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  organizations      Organization[]
+  projects           Project[]
+  orgMemberShips     OrganizationMember[]
   projectMemberShips ProjectMember[]
 }
 
