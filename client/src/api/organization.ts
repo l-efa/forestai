@@ -24,12 +24,12 @@ const organizationApi = apiSlice.injectEndpoints({
     }),
 
     getOrganization: builder.query<OrganizationType, string>({
-      query: (id) => ({ url: `/organization/${id}`, method: "GET" }),
+      query: (orgId) => ({ url: `/organization/${orgId}`, method: "GET" }),
       providesTags: ["Organization"],
     }),
 
     deleteOrganization: builder.mutation<{ message: string }, string>({
-      query: (id) => ({ url: `/organization/${id}`, method: "DELETE" }),
+      query: (orgId) => ({ url: `/organization/${orgId}`, method: "DELETE" }),
       invalidatesTags: ["Organization"],
     }),
   }),

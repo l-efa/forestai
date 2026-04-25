@@ -58,7 +58,7 @@ const getOwnedOrganizations = async (request: Request, response: Response) => {
 };
 
 const getOrganization = async (request: Request, response: Response) => {
-  const orgId = request.params.id as string;
+  const orgId = request.params.orgId as string;
   const userId = request.user?.id as string;
 
   if (!orgId || !userId)
@@ -100,7 +100,7 @@ const getOrganization = async (request: Request, response: Response) => {
 };
 
 const deleteOrganization = async (request: Request, response: Response) => {
-  const orgId = request.params.id as string;
+  const orgId = request.params.orgId as string;
   const userId = request.user?.id as string;
 
   if (!orgId) return response.status(400).json({ message: "invalid id" });
@@ -108,8 +108,12 @@ const deleteOrganization = async (request: Request, response: Response) => {
   try {
     const org = await prisma.organization.findUnique({ where: { id: orgId } });
 
-    if (!org) return response.status(404).json({ message: "Organization not found" });
-    if (org.ownerId !== userId) return response.status(403).json({ message: "Only the owner can delete this organization" });
+    if (!org)
+      return response.status(404).json({ message: "Organization not found" });
+    if (org.ownerId !== userId)
+      return response
+        .status(403)
+        .json({ message: "Only the owner can delete this organization" });
 
     await prisma.$transaction([
       prisma.projectMember.deleteMany({

@@ -1,21 +1,44 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 import SidebarItem from "./SidebarItem";
 import UserMenu from "./UserMenu";
 
-import { LayoutDashboard, Component, Building2 } from "lucide-react";
+import {
+  LayoutDashboard,
+  Component,
+  Building2,
+  CalendarDays,
+  Info,
+  Users,
+  FolderKanban,
+} from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
 import { avatarColors } from "@/utils/avatarColors";
 
 const siderbarlinks = [
   { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { name: "Organizations", url: "/organization", icon: Building2 },
+  { name: "Calendar", url: "/calendar", icon: CalendarDays },
   { name: "Component test", url: "/components", icon: Component },
+];
+
+const getOrganizationLinks = (orgId: string) => [
+  { name: "Overview", url: `/organization/${orgId}`, icon: Info },
+  {
+    name: "Projects",
+    url: `/organization/${orgId}/projects`,
+    icon: FolderKanban,
+  },
+  { name: "Members", url: `/organization/${orgId}/members`, icon: Users },
 ];
 
 export default function Dashboard() {
   const [openUserMenu, setOpenUserMenu] = useState(false);
+
+  const { pathname } = useLocation();
+  const orgMatch = pathname.match(/^\/organization\/([^/]+)/);
+  const orgId = orgMatch ? orgMatch[1] : null;
 
   const handleUserMenuClick = () => {
     setOpenUserMenu((prev) => !prev);
@@ -35,6 +58,21 @@ export default function Dashboard() {
               icon={item.icon}
             />
           ))}
+          {orgId && (
+            <>
+              <div className="mt-2 border-t border-surface-border pt-2">
+                organization
+              </div>
+              {getOrganizationLinks(orgId).map((item) => (
+                <SidebarItem
+                  key={item.url}
+                  name={item.name}
+                  url={item.url}
+                  icon={item.icon}
+                />
+              ))}
+            </>
+          )}
         </div>
         <div className="relative mt-auto">
           {openUserMenu && <UserMenu />}

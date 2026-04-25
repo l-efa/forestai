@@ -84,14 +84,14 @@ const Login = async (request: Request, response: Response) => {
     const token = jwt.sign(
       { id: existingUser.id, username: existingUser.username },
       process.env.SECRET_KEY!,
-      { expiresIn: "15m" },
+      { expiresIn: "1h" },
     );
 
     response.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
 
     return response.status(200).json({ message: "Login successful" });

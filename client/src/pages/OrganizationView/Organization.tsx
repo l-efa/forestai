@@ -9,8 +9,8 @@ import { useState } from "react";
 import Confirm from "@/components/Confirm";
 
 export default function Organization() {
-  const { id } = useParams();
-  const { data: org, isLoading } = useGetOrganizationQuery(id!);
+  const { orgId } = useParams();
+  const { data: org, isLoading } = useGetOrganizationQuery(orgId!);
   const [confirm, setConfirm] = useState(false);
 
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function Organization() {
 
   const handleDeleteOrganization = async () => {
     console.log("delete");
-    const response = await deleteOrganization(id!);
+    const response = await deleteOrganization(orgId!);
 
     if (response.data) {
       console.log(response.data);

@@ -1,20 +1,25 @@
 import { Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
-import ComponentTestPage from "./pages/ComponentTestPage";
 import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import ComponentTestPage from "./pages/ComponentTestPage";
+import NotFound from "./pages/NotFound";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // DASHBOARD
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import Dashboard from "./pages/Dashboard";
 import DashboardView from "./pages/DashboardView";
-
 import OrganizationView from "./pages/OrganizationView";
-import Organization from "./pages/OrganizationView/Organization";
+import Calendar from "./pages/Calendar";
 
-import User from "./pages/User/User";
+// ORGANIZATION
+import Organization from "./pages/OrganizationView/Organization";
+import Projects from "./pages/OrganizationView/Projects";
+import Members from "./pages/OrganizationView/Members";
+
+// USER
 import Settings from "./pages/Settings";
+import User from "./pages/User/User";
 
 export default function Router() {
   return (
@@ -32,8 +37,13 @@ export default function Router() {
         >
           <Route path="/dashboard" element={<DashboardView />} />
           <Route path="/organization" element={<OrganizationView />} />
-          <Route path="/organization/:id" element={<Organization />} />
+          <Route path="/calendar" element={<Calendar />} />
           <Route path="/components" element={<ComponentTestPage />} />
+
+          <Route path="/organization/:orgId" element={<Organization />} />
+          <Route path="/organization/:orgId/projects" element={<Projects />} />
+          <Route path="/organization/:orgId/members" element={<Members />} />
+
           <Route path="/settings" element={<Settings />} />
           <Route path="/user" element={<User />} />
         </Route>

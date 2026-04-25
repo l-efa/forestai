@@ -17,13 +17,13 @@ organizationRouter.get(
 );
 
 organizationRouter.get(
-  "/:id",
+  "/:orgId",
   authMiddleware,
   organizationController.getOrganization,
 );
 
 organizationRouter.delete(
-  "/:id",
+  "/:orgId",
   authMiddleware,
   organizationController.deleteOrganization,
 );
