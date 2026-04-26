@@ -5,6 +5,17 @@ type NewOrganizationType = {
   name: string;
 };
 
+type OrganizationMembers = {
+  userId: string;
+  role: "admin" | "moderator" | "user";
+  createdAt: Date;
+  user: {
+    username: string;
+    email: string;
+    profileColor: string;
+  };
+};
+
 const organizationApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createOrganization: builder.mutation<
@@ -18,6 +29,7 @@ const organizationApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Organization"],
     }),
+
     getOwnedOrganizations: builder.query<OrganizationType[], void>({
       query: () => ({ url: "/organization", method: "GET" }),
       providesTags: ["Organization"],
@@ -25,6 +37,14 @@ const organizationApi = apiSlice.injectEndpoints({
 
     getOrganization: builder.query<OrganizationType, string>({
       query: (orgId) => ({ url: `/organization/${orgId}`, method: "GET" }),
+      providesTags: ["Organization"],
+    }),
+
+    getOrganizationMembers: builder.query<OrganizationMembers[], string>({
+      query: (orgId) => ({
+        url: `/organization/${orgId}/members`,
+        method: "GET",
+      }),
       providesTags: ["Organization"],
     }),
 
@@ -39,4 +59,5 @@ export const {
   useGetOwnedOrganizationsQuery,
   useGetOrganizationQuery,
   useDeleteOrganizationMutation,
+  useGetOrganizationMembersQuery,
 } = organizationApi;

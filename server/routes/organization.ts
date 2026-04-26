@@ -28,4 +28,16 @@ organizationRouter.delete(
   organizationController.deleteOrganization,
 );
 
+organizationRouter.get(
+  "/:orgId/members",
+  authMiddleware,
+  organizationController.getOrganizationMembers,
+);
+
+organizationRouter.post(
+  "/:orgId/invite",
+  authMiddleware,
+  organizationController.inviteUserToOrg,
+);
+
 export default organizationRouter;

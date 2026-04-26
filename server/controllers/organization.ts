@@ -133,9 +133,69 @@ const deleteOrganization = async (request: Request, response: Response) => {
   }
 };
 
+const getOrganizationMembers = async (request: Request, response: Response) => {
+  const orgId = request.params.orgId as string;
+
+  try {
+    const members = await prisma.organizationMember.findMany({
+      where: { organizationId: orgId },
+      select: {
+        userId: true,
+        role: true,
+        createdAt: true,
+        user: {
+          select: {
+            username: true,
+            email: true,
+            profileColor: true,
+          },
+        },
+      },
+    });
+
+    return response.status(200).json(members);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const inviteUserToOrg = async (request: Request, response: Response) => {
+  const { userId } = request.body;
+  const orgId = request.params.orgId as string;
+  const by = request.user?.id as string;
+
+  if (!userId) return response.status(400).json({ message: "Invalid id" });
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) return response.status(400).json({ message: "User not found" });
+
+    await prisma.invitation.create({
+      data: {
+        organizationId: orgId,
+        invitedById: by,
+        invitedUserId: userId,
+      },
+    });
+
+    return response.status(201).json({ message: "Invitation sent" });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   createOrganization,
   getOwnedOrganizations,
   getOrganization,
   deleteOrganization,
+  getOrganizationMembers,
+  inviteUserToOrg,
 };

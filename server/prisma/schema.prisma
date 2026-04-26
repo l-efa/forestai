@@ -19,6 +19,8 @@ model User {
   projects           Project[]
   orgMemberShips     OrganizationMember[]
   projectMemberShips ProjectMember[]
+  sentInvites        Invitation[] @relation("sentInvites")
+  receivedInvites    Invitation[] @relation("receivedInvites")
 }
 
 model Organization {
@@ -28,8 +30,9 @@ model Organization {
   owner     User     @relation(fields: [ownerId], references: [id])   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  projects  Project[]
-  members   OrganizationMember[]
+  projects    Project[]
+  members     OrganizationMember[]
+  invitations Invitation[]
 }
 
 model Project {
@@ -66,4 +69,16 @@ model ProjectMember {
   createdAt DateTime @default(now())
 
   @@unique([userId, projectId])
+}
+
+model Invitation {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  invitedById    String
+  invitedBy      User         @relation("sentInvites", fields: [invitedById], references: [id])
+  invitedUserId  String
+  invitedUser    User         @relation("receivedInvites", fields: [invitedUserId], references: [id])
+  createdAt      DateTime     @default(now())
+  expiresAt      DateTime?    // optional expiry
 }
