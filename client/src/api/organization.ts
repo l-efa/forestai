@@ -16,6 +16,11 @@ type OrganizationMembers = {
   };
 };
 
+type MemberRemoveInput = {
+  userId: string;
+  orgId: string;
+};
+
 const organizationApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createOrganization: builder.mutation<
@@ -52,6 +57,15 @@ const organizationApi = apiSlice.injectEndpoints({
       query: (orgId) => ({ url: `/organization/${orgId}`, method: "DELETE" }),
       invalidatesTags: ["Organization"],
     }),
+
+    removeMember: builder.mutation<{ message: string }, MemberRemoveInput>({
+      query: ({ userId, orgId }) => ({
+        url: `/organization/${orgId}/members`,
+        method: "DELETE",
+        body: { userId },
+      }),
+      invalidatesTags: ["Organization"],
+    }),
   }),
 });
 export const {
@@ -60,4 +74,5 @@ export const {
   useGetOrganizationQuery,
   useDeleteOrganizationMutation,
   useGetOrganizationMembersQuery,
+  useRemoveMemberMutation,
 } = organizationApi;

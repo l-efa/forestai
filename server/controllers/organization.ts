@@ -4,7 +4,6 @@ import { prisma } from "../lib/prisma";
 
 const createOrganization = async (request: Request, response: Response) => {
   const { name } = request.body;
-  const userId = request.user?.id;
 
   if (!name) {
     return response
@@ -62,7 +61,7 @@ const getOrganization = async (request: Request, response: Response) => {
   const userId = request.user?.id as string;
 
   if (!orgId || !userId)
-    return response.status(500).json({ message: "Id not found" });
+    return response.status(400).json({ message: "Id not found" });
 
   try {
     const isMember = await prisma.organizationMember.findUnique({
@@ -116,6 +115,7 @@ const deleteOrganization = async (request: Request, response: Response) => {
         .json({ message: "Only the owner can delete this organization" });
 
     await prisma.$transaction([
+      prisma.invitation.deleteMany({ where: { organizationId: orgId } }),
       prisma.projectMember.deleteMany({
         where: { project: { organizationId: orgId } },
       }),
@@ -135,8 +135,19 @@ const deleteOrganization = async (request: Request, response: Response) => {
 
 const getOrganizationMembers = async (request: Request, response: Response) => {
   const orgId = request.params.orgId as string;
+  const userId = request.user?.id as string;
 
   try {
+    const isUserInOrg = await prisma.organizationMember.findFirst({
+      where: {
+        userId: userId,
+        organizationId: orgId,
+      },
+    });
+
+    if (!isUserInOrg) {
+      return response.status(403).json({ message: "Forbidden" });
+    }
     const members = await prisma.organizationMember.findMany({
       where: { organizationId: orgId },
       select: {
@@ -168,6 +179,21 @@ const inviteUserToOrg = async (request: Request, response: Response) => {
   if (!userId) return response.status(400).json({ message: "Invalid id" });
 
   try {
+    const inviter = await prisma.organizationMember.findUnique({
+      where: {
+        userId_organizationId: {
+          userId: by,
+          organizationId: orgId,
+        },
+      },
+    });
+
+    if (!inviter || inviter.role !== "admin") {
+      return response
+        .status(403)
+        .json({ message: "Only admins can invite members" });
+    }
+
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
@@ -175,6 +201,31 @@ const inviteUserToOrg = async (request: Request, response: Response) => {
     });
 
     if (!user) return response.status(400).json({ message: "User not found" });
+
+    const userInOrg = await prisma.organizationMember.findUnique({
+      where: {
+        userId_organizationId: {
+          userId: userId,
+          organizationId: orgId,
+        },
+      },
+    });
+
+    if (userInOrg)
+      return response
+        .status(409)
+        .json({ message: "User already in organization" });
+
+    const existingInvite = await prisma.invitation.findFirst({
+      where: {
+        invitedUserId: userId,
+        organizationId: orgId,
+      },
+    });
+
+    if (existingInvite) {
+      return response.status(409).json({ message: "Invitation already sent" });
+    }
 
     await prisma.invitation.create({
       data: {
@@ -191,6 +242,70 @@ const inviteUserToOrg = async (request: Request, response: Response) => {
   }
 };
 
+const deleteUserFromOrg = async (request: Request, response: Response) => {
+  const { userId } = request.body;
+  const by = request.user?.id as string;
+  const orgId = request.params.orgId as string;
+
+  if (!userId) return response.status(400).json({ message: "Invalid id" });
+
+  try {
+    const inviter = await prisma.organizationMember.findUnique({
+      where: {
+        userId_organizationId: {
+          userId: by,
+          organizationId: orgId,
+        },
+      },
+    });
+
+    if (!inviter || inviter.role !== "admin") {
+      return response
+        .status(403)
+        .json({ message: "Only admins can delete members" });
+    }
+
+    const org = await prisma.organization.findUnique({
+      where: {
+        id: orgId,
+      },
+    });
+
+    if (org?.ownerId === userId) {
+      return response
+        .status(403)
+        .json({ message: "Cannot remove the organization owner" });
+    }
+
+    const isUserInOrg = await prisma.organizationMember.findFirst({
+      where: {
+        userId: userId,
+        organizationId: orgId,
+      },
+    });
+
+    if (!isUserInOrg) {
+      return response.status(404).json({ message: "Unable to remove user" });
+    }
+
+    await prisma.organizationMember.delete({
+      where: {
+        userId_organizationId: {
+          userId: userId,
+          organizationId: orgId,
+        },
+      },
+    });
+
+    return response
+      .status(200)
+      .json({ message: "User deleted from organization" });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   createOrganization,
   getOwnedOrganizations,
@@ -198,4 +313,5 @@ export default {
   deleteOrganization,
   getOrganizationMembers,
   inviteUserToOrg,
+  deleteUserFromOrg,
 };

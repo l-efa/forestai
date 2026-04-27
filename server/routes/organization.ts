@@ -40,4 +40,10 @@ organizationRouter.post(
   organizationController.inviteUserToOrg,
 );
 
+organizationRouter.delete(
+  "/:orgId/members",
+  authMiddleware,
+  organizationController.deleteUserFromOrg,
+);
+
 export default organizationRouter;

@@ -1,4 +1,7 @@
-import { useGetOrganizationMembersQuery } from "@/api/organization";
+import {
+  useGetOrganizationMembersQuery,
+  useRemoveMemberMutation,
+} from "@/api/organization";
 import { useParams } from "react-router-dom";
 import { formatDate } from "@/utils/format";
 import { avatarColors } from "@/utils/avatarColors";
@@ -37,6 +40,12 @@ export default function Members() {
     skip: debouncedValue.length < 2,
   });
 
+  const [removeUser] = useRemoveMemberMutation();
+
+  const handleRemoveUser = async (userId: string) => {
+    await removeUser({ userId: userId, orgId: orgId! });
+  };
+
   return (
     <div>
       <p>Members:</p>
@@ -61,6 +70,13 @@ export default function Members() {
               <p className="text-xs opacity-60">
                 {formatDate(member.createdAt)}
               </p>
+              <button
+                onClick={() => {
+                  handleRemoveUser(member.userId);
+                }}
+              >
+                remove
+              </button>
             </div>
           </div>
         ))}
