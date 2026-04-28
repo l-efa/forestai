@@ -306,6 +306,75 @@ const deleteUserFromOrg = async (request: Request, response: Response) => {
   }
 };
 
+const acceptInvitation = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const invitationId = request.params.invitationId as string;
+
+  if (!invitationId) {
+    return response.status(400).json({ message: "Invalid invitation" });
+  }
+
+  try {
+    const invitation = await prisma.invitation.findUnique({
+      where: {
+        id: invitationId,
+      },
+    });
+
+    if (!invitation || invitation.invitedUserId !== userId) {
+      return response.status(400).json({ message: "Invitation is expired" });
+    }
+
+    await prisma.organizationMember.create({
+      data: {
+        userId: userId,
+        organizationId: invitation.organizationId,
+      },
+    });
+
+    await prisma.invitation.delete({
+      where: {
+        id: invitationId,
+      },
+    });
+
+    return response.status(200).json({ message: "Invitation accepted" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const declineInvitation = async (request: Request, response: Response) => {
+  const invitationId = request.params.invitationId as string;
+  const userId = request.user?.id as string;
+
+  if (!invitationId) {
+    return response.status(400).json({ message: "Invalid invitation" });
+  }
+
+  try {
+    const invitation = await prisma.invitation.findUnique({
+      where: {
+        id: invitationId,
+      },
+    });
+
+    if (!invitation || invitation.invitedUserId !== userId) {
+      return response.status(400).json({ message: "Invitation not found" });
+    }
+
+    await prisma.invitation.delete({
+      where: {
+        id: invitationId,
+      },
+    });
+
+    return response.status(200).json({ message: "Invitation declined" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   createOrganization,
   getOwnedOrganizations,
@@ -314,4 +383,6 @@ export default {
   getOrganizationMembers,
   inviteUserToOrg,
   deleteUserFromOrg,
+  acceptInvitation,
+  declineInvitation,
 };

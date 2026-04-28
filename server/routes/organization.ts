@@ -46,4 +46,16 @@ organizationRouter.delete(
   organizationController.deleteUserFromOrg,
 );
 
+organizationRouter.post(
+  "/invitations/:invitationId/accept",
+  authMiddleware,
+  organizationController.acceptInvitation,
+);
+
+organizationRouter.delete(
+  "/invitations/:invitationId/decline",
+  authMiddleware,
+  organizationController.declineInvitation,
+);
+
 export default organizationRouter;

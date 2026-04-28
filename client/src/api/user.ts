@@ -37,7 +37,6 @@ const userApi = apiSlice.injectEndpoints({
         method: "POST",
         body: { userId },
       }),
-      invalidatesTags: ["Organization"],
     }),
 
     getUserNotifications: builder.query<Notifications[], void>({

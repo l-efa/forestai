@@ -66,6 +66,22 @@ const organizationApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Organization"],
     }),
+
+    acceptInvitation: builder.mutation<{ message: string }, string>({
+      query: (invitationId) => ({
+        url: `/organization/invitations/${invitationId}/accept`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Organization", "UserData"],
+    }),
+
+    declineInvitation: builder.mutation<void, string>({
+      query: (invitationId) => ({
+        url: `/organization/invitations/${invitationId}/decline`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["UserData"],
+    }),
   }),
 });
 export const {
@@ -75,4 +91,6 @@ export const {
   useDeleteOrganizationMutation,
   useGetOrganizationMembersQuery,
   useRemoveMemberMutation,
+  useAcceptInvitationMutation,
+  useDeclineInvitationMutation,
 } = organizationApi;
