@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const userMenuLinks = [
   { name: "User", url: "/user" },
   { name: "Settings", url: "/settings" },
+  { name: "Notifications", url: "/notifications" },
 ];
 
 export default function UserMenu() {

@@ -20,6 +20,7 @@ import Members from "./pages/OrganizationView/Members";
 // USER
 import Settings from "./pages/Settings";
 import User from "./pages/User/User";
+import Notifications from "./pages/User/Notifications";
 
 export default function Router() {
   return (
@@ -46,6 +47,7 @@ export default function Router() {
 
           <Route path="/settings" element={<Settings />} />
           <Route path="/user" element={<User />} />
+          <Route path="/notifications" element={<Notifications />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
