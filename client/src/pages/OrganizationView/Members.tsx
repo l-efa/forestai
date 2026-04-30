@@ -101,7 +101,7 @@ export default function Members() {
                     <button
                       key={user.id}
                       onClick={() => setInvitedUser(user.id)}
-                      className={`flex items-center gap-3 rounded-lg p-2 text-left transition-all hover:bg-surface-card ${invitedUser === user.username ? "bg-surface-active" : ""}`}
+                      className={`flex items-center gap-3 rounded-lg p-2 text-left transition-all hover:bg-surface-card ${invitedUser === user.id ? "bg-surface-active" : ""}`}
                     >
                       <div
                         className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${avatarColors[user.profileColor]}`}

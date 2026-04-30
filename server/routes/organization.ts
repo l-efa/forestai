@@ -1,5 +1,6 @@
 import { Router } from "express";
 import organizationController from "../controllers/organization";
+import projectController from "../controllers/project";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const organizationRouter = Router();
@@ -56,6 +57,18 @@ organizationRouter.delete(
   "/invitations/:invitationId/decline",
   authMiddleware,
   organizationController.declineInvitation,
+);
+
+organizationRouter.get(
+  "/:orgId/project",
+  authMiddleware,
+  projectController.getProjects,
+);
+
+organizationRouter.post(
+  "/:orgId/project",
+  authMiddleware,
+  projectController.addProject,
 );
 
 export default organizationRouter;
