@@ -2,7 +2,7 @@ import { useCreateProjectMutation, useGetProjectsQuery } from "@/api/project";
 import Button2 from "@/components/Button2";
 import InputField from "@/components/InputField";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export default function Projects() {
   const { orgId } = useParams();
@@ -13,6 +13,7 @@ export default function Projects() {
 
   const handleCreateProject = () => {
     createProject({ name: projectName, orgId: orgId! });
+    toggleModal();
   };
 
   const toggleModal = () => {
@@ -52,11 +53,11 @@ export default function Projects() {
         </>
       )}
       {projects?.map((project) => (
-        <div key={project.id}>
+        <Link to={`${project.id}`} className="p-2" key={project.id}>
           <p>{project.name}</p>
           <p>{project.id}</p>
           <p>{project.createdAt}</p>
-        </div>
+        </Link>
       ))}
     </div>
   );

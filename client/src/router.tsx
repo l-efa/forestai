@@ -17,6 +17,11 @@ import Organization from "./pages/OrganizationView/Organization";
 import Projects from "./pages/OrganizationView/Projects";
 import Members from "./pages/OrganizationView/Members";
 
+// PROJECT
+import Project from "./pages/ProjectView";
+import Files from "./pages/ProjectView/Files";
+import Teams from "./pages/ProjectView/Teams";
+
 // USER
 import Settings from "./pages/Settings";
 import User from "./pages/User/User";
@@ -42,8 +47,21 @@ export default function Router() {
           <Route path="/components" element={<ComponentTestPage />} />
 
           <Route path="/organization/:orgId" element={<Organization />} />
-          <Route path="/organization/:orgId/projects" element={<Projects />} />
+          <Route path="/organization/:orgId/project" element={<Projects />} />
           <Route path="/organization/:orgId/members" element={<Members />} />
+
+          <Route
+            path="/organization/:orgId/project/:projectId"
+            element={<Project />}
+          />
+          <Route
+            path="/organization/:orgId/project/:projectId/files"
+            element={<Files />}
+          />
+          <Route
+            path="/organization/:orgId/project/:projectId/teams"
+            element={<Teams />}
+          />
 
           <Route path="/settings" element={<Settings />} />
           <Route path="/user" element={<User />} />

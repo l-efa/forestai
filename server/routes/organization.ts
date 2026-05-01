@@ -71,4 +71,16 @@ organizationRouter.post(
   projectController.addProject,
 );
 
+organizationRouter.get(
+  "/:orgId/project/:projectId",
+  authMiddleware,
+  projectController.getProjectData,
+);
+
+organizationRouter.delete(
+  "/:orgId/project/:projectId",
+  authMiddleware,
+  projectController.deleteProject,
+);
+
 export default organizationRouter;

@@ -12,6 +12,9 @@ import {
   Info,
   Users,
   FolderKanban,
+  InfoIcon,
+  Folder,
+  UsersRound,
 } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
 import { avatarColors } from "@/utils/avatarColors";
@@ -27,10 +30,28 @@ const getOrganizationLinks = (orgId: string) => [
   { name: "Overview", url: `/organization/${orgId}`, icon: Info },
   {
     name: "Projects",
-    url: `/organization/${orgId}/projects`,
+    url: `/organization/${orgId}/project`,
     icon: FolderKanban,
   },
   { name: "Members", url: `/organization/${orgId}/members`, icon: Users },
+];
+
+const getProjectLinks = (orgId: string, projectId: string) => [
+  {
+    name: "Board",
+    url: `/organization/${orgId}/project/${projectId}`,
+    icon: InfoIcon,
+  },
+  {
+    name: "Files",
+    url: `/organization/${orgId}/project/${projectId}/files`,
+    icon: Folder,
+  },
+  {
+    name: "Teams",
+    url: `/organization/${orgId}/project/${projectId}/teams`,
+    icon: UsersRound,
+  },
 ];
 
 export default function Dashboard() {
@@ -39,6 +60,10 @@ export default function Dashboard() {
   const { pathname } = useLocation();
   const orgMatch = pathname.match(/^\/organization\/([^/]+)/);
   const orgId = orgMatch ? orgMatch[1] : null;
+  const projectMatch = pathname.match(
+    /^\/organization\/[^/]+\/project\/([^/]+)/,
+  );
+  const projectId = projectMatch ? projectMatch[1] : null;
 
   const handleUserMenuClick = () => {
     setOpenUserMenu((prev) => !prev);
@@ -64,6 +89,21 @@ export default function Dashboard() {
                 organization
               </div>
               {getOrganizationLinks(orgId).map((item) => (
+                <SidebarItem
+                  key={item.url}
+                  name={item.name}
+                  url={item.url}
+                  icon={item.icon}
+                />
+              ))}
+            </>
+          )}
+          {orgId && projectId && (
+            <>
+              <div className="mt-2 border-t border-surface-border pt-2">
+                project
+              </div>
+              {getProjectLinks(orgId, projectId).map((item) => (
                 <SidebarItem
                   key={item.url}
                   name={item.name}

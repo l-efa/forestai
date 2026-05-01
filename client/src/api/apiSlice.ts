@@ -8,6 +8,13 @@ export const apiSlice = createApi({
     baseUrl: "http://localhost:3000/api",
     credentials: "include",
   }),
-  tagTypes: ["User", "Organization", "FetchedUsers", "UserData", "Projects"],
+  tagTypes: [
+    "User",
+    "Organization",
+    "FetchedUsers",
+    "UserData",
+    "Projects",
+    "ProjectData",
+  ],
   endpoints: () => ({}), // empty — features inject their own
 });
