@@ -47,6 +47,8 @@ organizationRouter.delete(
   organizationController.deleteUserFromOrg,
 );
 
+// Invitations
+
 organizationRouter.post(
   "/invitations/:invitationId/accept",
   authMiddleware,
@@ -58,6 +60,8 @@ organizationRouter.delete(
   authMiddleware,
   organizationController.declineInvitation,
 );
+
+// Project routes
 
 organizationRouter.get(
   "/:orgId/project",
@@ -81,6 +85,12 @@ organizationRouter.delete(
   "/:orgId/project/:projectId",
   authMiddleware,
   projectController.deleteProject,
+);
+
+organizationRouter.get(
+  "/:orgId/project/:projectId/teams",
+  authMiddleware,
+  projectController.getProjectMembers,
 );
 
 export default organizationRouter;

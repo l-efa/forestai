@@ -120,4 +120,50 @@ const deleteProject = async (request: Request, response: Response) => {
   }
 };
 
-export default { getProjects, addProject, getProjectData, deleteProject };
+const getProjectMembers = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+
+  if (!projectId || !userId)
+    return response.status(400).json({ message: "Id not found" });
+
+  try {
+    const isMember = await prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId: userId,
+          projectId: projectId,
+        },
+      },
+    });
+
+    if (!isMember) return response.status(403).json({ message: "Forbidden" });
+
+    const members = await prisma.projectMember.findMany({
+      where: {
+        projectId: projectId,
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+            email: true,
+            profileColor: true,
+          },
+        },
+      },
+    });
+
+    return response.status(200).json(members);
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export default {
+  getProjects,
+  addProject,
+  getProjectData,
+  deleteProject,
+  getProjectMembers,
+};

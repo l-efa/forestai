@@ -12,6 +12,17 @@ type Project = {
   createdAt: string;
 };
 
+type projectMember = {
+  userId: string;
+  role: "admin" | "moderator" | "user";
+  createdAt: Date;
+  user: {
+    username: string;
+    email: string;
+    profileColor: string;
+  };
+};
+
 const projectApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProjects: builder.query<Projects[], string>({
@@ -51,6 +62,16 @@ const projectApi = apiSlice.injectEndpoints({
         invalidatesTags: ["Projects"],
       },
     ),
+    getProjectMembers: builder.query<
+      projectMember[],
+      { orgId: string; projectId: string }
+    >({
+      query: ({ orgId, projectId }) => ({
+        url: `/organization/${orgId}/project/${projectId}/teams`,
+        method: "GET",
+      }),
+      providesTags: ["ProjectTeams"],
+    }),
   }),
 });
 
@@ -59,4 +80,5 @@ export const {
   useCreateProjectMutation,
   useGetProjectDataQuery,
   useDeleteProjectMutation,
+  useGetProjectMembersQuery,
 } = projectApi;
