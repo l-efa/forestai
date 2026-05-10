@@ -18,6 +18,12 @@ organizationRouter.get(
 );
 
 organizationRouter.get(
+  "/all",
+  authMiddleware,
+  organizationController.getOrganizations,
+);
+
+organizationRouter.get(
   "/:orgId",
   authMiddleware,
   organizationController.getOrganization,

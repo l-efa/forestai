@@ -1,10 +1,13 @@
-import { useGetOwnedOrganizationsQuery } from "@/api/organization";
+import {
+  useGetOrganizationsQuery,
+  useGetOwnedOrganizationsQuery,
+} from "@/api/organization";
 import { Link } from "react-router-dom";
 import { Users, FolderOpen } from "lucide-react";
 import Card from "@/components/Card";
 
 export default function OwnedOrganizations() {
-  const { data: organizations, isLoading } = useGetOwnedOrganizationsQuery();
+  const { data: organizations, isLoading } = useGetOrganizationsQuery();
 
   if (isLoading)
     return <div className="text-sm text-content-muted">Loading...</div>;

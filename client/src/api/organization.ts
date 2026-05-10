@@ -40,6 +40,11 @@ const organizationApi = apiSlice.injectEndpoints({
       providesTags: ["Organization"],
     }),
 
+    getOrganizations: builder.query<OrganizationType[], void>({
+      query: () => ({ url: "/organization/all", method: "GET" }),
+      providesTags: ["Organization"],
+    }),
+
     getOrganization: builder.query<OrganizationType, string>({
       query: (orgId) => ({ url: `/organization/${orgId}`, method: "GET" }),
       providesTags: ["Organization"],
@@ -93,4 +98,5 @@ export const {
   useRemoveMemberMutation,
   useAcceptInvitationMutation,
   useDeclineInvitationMutation,
+  useGetOrganizationsQuery,
 } = organizationApi;
