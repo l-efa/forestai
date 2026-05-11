@@ -1,5 +1,5 @@
 import { useGetOrganizationMembersQuery } from "@/api/organization";
-import { useGetProjectMembersQuery } from "@/api/project";
+import { useAddUserMutation, useGetProjectMembersQuery } from "@/api/project";
 import Button2 from "@/components/Button2";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 export default function Teams() {
   const { orgId, projectId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
 
   const { data: projectMembers } = useGetProjectMembersQuery({
     orgId: orgId!,
@@ -14,8 +15,25 @@ export default function Teams() {
   });
 
   const { data: orgMembers } = useGetOrganizationMembersQuery(orgId!);
+
+  const [addUser] = useAddUserMutation();
+
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
+  };
+
+  const handleMemberClick = (userId: string) => {
+    console.log(userId);
+    setSelectedUser(userId);
+  };
+
+  const handleMemberSelect = () => {
+    console.log("Selected", selectedUser);
+    addUser({
+      orgId: orgId!,
+      projectId: projectId!,
+      selectedUser: selectedUser,
+    });
   };
 
   return (
@@ -40,12 +58,18 @@ export default function Teams() {
               <h2 className="mb-4 text-lg font-bold">Add Members</h2>
               {orgMembers &&
                 orgMembers.map((member) => (
-                  <div>
-                    <p>{member.user.username}</p>
-                    <p>{member.role}</p>
-                  </div>
+                  <button
+                    key={member.userId}
+                    onClick={() => handleMemberClick(member.userId)}
+                    className={`flex items-center gap-3 rounded-lg p-2 text-left transition-all ${selectedUser === member.userId ? "bg-surface-active" : "hover:bg-surface-card"}`}
+                  >
+                    <span className="text-sm">
+                      {member.user.username} {`(${member.role})`}
+                    </span>
+                  </button>
                 ))}
               <div className="mt-4 flex justify-end gap-2">
+                <Button2 name="Select" changeHandler={handleMemberSelect} />
                 <button
                   className="rounded-lg px-4 py-2 text-sm text-content-secondary hover:text-content-primary"
                   onClick={toggleModal}

@@ -99,4 +99,10 @@ organizationRouter.get(
   projectController.getProjectMembers,
 );
 
+organizationRouter.post(
+  "/:orgId/project/:projectId/teams",
+  authMiddleware,
+  projectController.setProjectMember,
+);
+
 export default organizationRouter;

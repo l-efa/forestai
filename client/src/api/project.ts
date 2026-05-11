@@ -23,6 +23,12 @@ type projectMember = {
   };
 };
 
+type addUserType = {
+  orgId: string;
+  projectId: string;
+  selectedUser: string;
+};
+
 const projectApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProjects: builder.query<Projects[], string>({
@@ -72,6 +78,14 @@ const projectApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["ProjectTeams"],
     }),
+    addUser: builder.mutation<void, addUserType>({
+      query: ({ orgId, projectId, selectedUser }) => ({
+        url: `/organization/${orgId}/project/${projectId}/teams`,
+        method: "POST",
+        body: { selectedUser },
+      }),
+      invalidatesTags: ["ProjectTeams"],
+    }),
   }),
 });
 
@@ -81,4 +95,5 @@ export const {
   useGetProjectDataQuery,
   useDeleteProjectMutation,
   useGetProjectMembersQuery,
+  useAddUserMutation,
 } = projectApi;
