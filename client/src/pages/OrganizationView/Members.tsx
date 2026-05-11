@@ -47,7 +47,7 @@ export default function Members() {
   };
 
   return (
-    <div>
+    <div className="p-3">
       <p>Members:</p>
       <Button2 name="Invite member" changeHandler={toggleInviteMember} />
       {members &&

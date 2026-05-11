@@ -1,6 +1,14 @@
 import { useGetOrganizationMembersQuery } from "@/api/organization";
-import { useAddUserMutation, useGetProjectMembersQuery } from "@/api/project";
+import {
+  useAddUserMutation,
+  useGetProjectMembersQuery,
+  useRemoveProjectMemberMutation,
+} from "@/api/project";
 import Button2 from "@/components/Button2";
+import Confirm from "@/components/Confirm";
+import { avatarColors, borderColors } from "@/utils/avatarColors";
+import { formatDate } from "@/utils/format";
+
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -18,6 +26,10 @@ export default function Teams() {
 
   const [addUser] = useAddUserMutation();
 
+  const [removeMember] = useRemoveProjectMemberMutation();
+
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
   };
@@ -27,26 +39,82 @@ export default function Teams() {
     setSelectedUser(userId);
   };
 
-  const handleMemberSelect = () => {
+  const handleMemberSelect = async () => {
     console.log("Selected", selectedUser);
-    addUser({
+    await addUser({
       orgId: orgId!,
       projectId: projectId!,
       selectedUser: selectedUser,
     });
   };
 
+  const handleRemoveClick = (userdId: string) => {
+    setSelectedUser(userdId);
+    setShowConfirm((prev) => !prev);
+  };
+
+  const handleMemberRemove = async (userId: string) => {
+    console.log("remove", userId);
+    await removeMember({
+      orgId: orgId!,
+      projectId: projectId!,
+      removedUser: userId,
+    });
+    toggleConfirm();
+  };
+
+  const toggleConfirm = () => {
+    setShowConfirm((prev) => !prev);
+  };
+
   return (
     <div>
       <Button2 name="Add members" changeHandler={toggleModal} />
       <p>Teams</p>
-      {projectMembers &&
-        projectMembers.map((member) => (
-          <div key={member.userId}>
-            <p>{member.user.username}</p>
-            <p>{member.userId}</p>
-          </div>
-        ))}
+      <div className="flex flex-col gap-2 p-3">
+        {projectMembers &&
+          projectMembers.map((member) => (
+            <div
+              key={member.userId}
+              className={`flex max-w-md items-center gap-4 rounded-lg border bg-transparent p-3 ${borderColors[member.user.profileColor]}`}
+            >
+              <div
+                className={`flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold ${avatarColors[member.user.profileColor]}`}
+              >
+                {member.user.username[0]?.toUpperCase()}
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold">{member.user.username}</p>
+                <p className="text-xs text-content-secondary">
+                  {member.user.email}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-medium uppercase text-content-secondary">
+                  {member.role}
+                </p>
+                <p className="text-xs text-content-secondary">
+                  {formatDate(member.createdAt)}
+                </p>
+                <button
+                  onClick={() => handleRemoveClick(member.user.username)}
+                  className="mt-1 text-xs text-red-400 hover:text-red-300"
+                >
+                  Remove
+                </button>
+                {showConfirm && (
+                  <Confirm
+                    info={`Are you sure you want to remove "${selectedUser}" from the group?`}
+                    confirmButton="Yes"
+                    cancelButton="No"
+                    onConfirm={() => handleMemberRemove(member.userId)}
+                    onCancel={toggleConfirm}
+                  />
+                )}
+              </div>
+            </div>
+          ))}
+      </div>
       {isModalOpen && (
         <>
           <div

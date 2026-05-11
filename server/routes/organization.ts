@@ -105,4 +105,10 @@ organizationRouter.post(
   projectController.setProjectMember,
 );
 
+organizationRouter.delete(
+  "/:orgId/project/:projectId/teams",
+  authMiddleware,
+  projectController.removeMember,
+);
+
 export default organizationRouter;

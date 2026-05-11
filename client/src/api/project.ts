@@ -86,6 +86,17 @@ const projectApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["ProjectTeams"],
     }),
+    removeProjectMember: builder.mutation<
+      void,
+      { orgId: string; projectId: string; removedUser: string }
+    >({
+      query: ({ orgId, projectId, removedUser }) => ({
+        url: `/organization/${orgId}/project/${projectId}/teams`,
+        method: "DELETE",
+        body: { removedUser },
+      }),
+      invalidatesTags: ["ProjectTeams"],
+    }),
   }),
 });
 
@@ -96,4 +107,5 @@ export const {
   useDeleteProjectMutation,
   useGetProjectMembersQuery,
   useAddUserMutation,
+  useRemoveProjectMemberMutation,
 } = projectApi;

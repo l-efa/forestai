@@ -193,6 +193,38 @@ const setProjectMember = async (request: Request, response: Response) => {
   }
 };
 
+const removeMember = async (request: Request, response: Response) => {
+  const userId = request.user?.id;
+  const projectId = request.params.projectId as string;
+  const { removedUser } = request.body;
+
+  if (!userId || !removedUser) {
+    return response.status(400).json({ message: "All fields required" });
+  }
+
+  try {
+    const isAdmin = await prisma.projectMember.findFirst({
+      where: {
+        userId: userId,
+        role: "admin",
+      },
+    });
+    if (!isAdmin) {
+      return response.status(401).json({ message: "forbidden" });
+    }
+
+    await prisma.projectMember.delete({
+      where: {
+        userId_projectId: { userId: removedUser, projectId: projectId },
+      },
+    });
+
+    return response.status(200).json({ message: "User removed from project" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   getProjects,
   addProject,
@@ -200,4 +232,5 @@ export default {
   deleteProject,
   getProjectMembers,
   setProjectMember,
+  removeMember,
 };
