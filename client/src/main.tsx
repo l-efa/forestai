@@ -7,7 +7,6 @@ import { store } from "./store";
 import { DarkModeProvider } from "./context/DarkMode.tsx";
 import { UserProvider } from "./context/UserContext.tsx";
 import Router from "./router.tsx";
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>

@@ -80,7 +80,7 @@ const getProjectData = async (request: Request, response: Response) => {
       },
     });
 
-    return response.status(200).json(project);
+    return response.status(200).json({ ...project, role: user.role });
   } catch (error) {
     return response.status(500).json({ message: "Something went wrong" });
   }

@@ -59,8 +59,7 @@ const getOwnedOrganizations = async (request: Request, response: Response) => {
 const getOrganizations = async (request: Request, response: Response) => {
   const userId = request.user?.id as string;
 
-  if (!userId)
-    return response.status(400).json({ message: "Id not found" });
+  if (!userId) return response.status(400).json({ message: "Id not found" });
 
   try {
     const memberships = await prisma.organizationMember.findMany({
@@ -126,6 +125,21 @@ const getOrganization = async (request: Request, response: Response) => {
     return response.status(200).json(organization);
   } catch (error) {
     console.error(error);
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const getOrgUser = async (request: Request, response: Response) => {
+  const userId = request.user?.id;
+
+  try {
+    const user = await prisma.organizationMember.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+    return response.status(200).json(user);
+  } catch (error) {
     return response.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -418,4 +432,5 @@ export default {
   deleteUserFromOrg,
   acceptInvitation,
   declineInvitation,
+  getOrgUser,
 };

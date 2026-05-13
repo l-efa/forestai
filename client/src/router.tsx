@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import ComponentTestPage from "./pages/ComponentTestPage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { OrgContextProvider } from "./context/OrgContext";
 
 // DASHBOARD
 import DashboardView from "./pages/DashboardView";
@@ -46,22 +47,21 @@ export default function Router() {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/components" element={<ComponentTestPage />} />
 
-          <Route path="/organization/:orgId" element={<Organization />} />
-          <Route path="/organization/:orgId/project" element={<Projects />} />
-          <Route path="/organization/:orgId/members" element={<Members />} />
-
           <Route
-            path="/organization/:orgId/project/:projectId"
-            element={<Project />}
-          />
-          <Route
-            path="/organization/:orgId/project/:projectId/files"
-            element={<Files />}
-          />
-          <Route
-            path="/organization/:orgId/project/:projectId/teams"
-            element={<Teams />}
-          />
+            path="/organization/:orgId"
+            element={
+              <OrgContextProvider>
+                <Outlet />
+              </OrgContextProvider>
+            }
+          >
+            <Route index element={<Organization />} />
+            <Route path="project" element={<Projects />} />
+            <Route path="members" element={<Members />} />
+            <Route path="project/:projectId" element={<Project />} />
+            <Route path="project/:projectId/files" element={<Files />} />
+            <Route path="project/:projectId/teams" element={<Teams />} />
+          </Route>
 
           <Route path="/settings" element={<Settings />} />
           <Route path="/user" element={<User />} />

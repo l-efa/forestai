@@ -30,6 +30,8 @@ export default function Project() {
     setOpenConfirm((prev) => !prev);
   };
 
+  console.log(projectData?.role);
+
   return (
     <div>
       <div>
@@ -37,7 +39,9 @@ export default function Project() {
         <p>{projectData?.createdAt}</p>
         <p>{projectData?.id}</p>
       </div>
-      <Button name="Delete project" changeHandler={toggleModal} />
+      {projectData?.role !== "member" && (
+        <Button name="Delete project" changeHandler={toggleModal} />
+      )}
       {openConfirm && (
         <Confirm
           info={`Are you sure you want to delete "${projectData?.name}" project?`}

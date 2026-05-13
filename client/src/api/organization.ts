@@ -5,9 +5,9 @@ type NewOrganizationType = {
   name: string;
 };
 
-type OrganizationMembers = {
+export type OrganizationMembers = {
   userId: string;
-  role: "admin" | "moderator" | "user";
+  role: "admin" | "moderator" | "member";
   createdAt: Date;
   user: {
     username: string;
@@ -47,6 +47,14 @@ const organizationApi = apiSlice.injectEndpoints({
 
     getOrganization: builder.query<OrganizationType, string>({
       query: (orgId) => ({ url: `/organization/${orgId}`, method: "GET" }),
+      providesTags: ["Organization"],
+    }),
+
+    getOrganizationUser: builder.query<OrganizationMembers, string>({
+      query: (orgId) => ({
+        url: `/organization/${orgId}/userinfo`,
+        method: "GET",
+      }),
       providesTags: ["Organization"],
     }),
 
@@ -99,4 +107,5 @@ export const {
   useAcceptInvitationMutation,
   useDeclineInvitationMutation,
   useGetOrganizationsQuery,
+  useGetOrganizationUserQuery,
 } = organizationApi;

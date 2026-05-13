@@ -9,6 +9,7 @@ import Button2 from "@/components/Button2";
 import { useEffect, useState } from "react";
 import InputField from "@/components/InputField";
 import { useFindUsersQuery, useInviteUserToOrgMutation } from "@/api/user";
+import { useOrgContext } from "@/context/OrgContext";
 
 export default function Members() {
   const { orgId } = useParams();
@@ -20,6 +21,10 @@ export default function Members() {
 
   const { data: members } = useGetOrganizationMembersQuery(orgId!);
   const [inviteUser, { isLoading }] = useInviteUserToOrgMutation();
+
+  const { org, orgUser } = useOrgContext();
+
+  console.log(org, orgUser);
 
   const handleInviteMember = () => {
     console.log(invitedUser, " invited");
@@ -70,13 +75,15 @@ export default function Members() {
               <p className="text-xs opacity-60">
                 {formatDate(member.createdAt)}
               </p>
-              <button
-                onClick={() => {
-                  handleRemoveUser(member.userId);
-                }}
-              >
-                remove
-              </button>
+              {orgUser.role !== "member" && (
+                <button
+                  onClick={() => {
+                    handleRemoveUser(member.userId);
+                  }}
+                >
+                  remove
+                </button>
+              )}
             </div>
           </div>
         ))}

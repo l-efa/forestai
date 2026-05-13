@@ -10,11 +10,12 @@ type Project = {
   name: string;
   id: string;
   createdAt: string;
+  role: "owner" | "admin" | "member";
 };
 
 type projectMember = {
   userId: string;
-  role: "admin" | "moderator" | "user";
+  role: "admin" | "moderator" | "member";
   createdAt: Date;
   user: {
     username: string;

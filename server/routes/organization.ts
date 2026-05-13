@@ -29,6 +29,12 @@ organizationRouter.get(
   organizationController.getOrganization,
 );
 
+organizationRouter.get(
+  "/:orgId/userinfo",
+  authMiddleware,
+  organizationController.getOrgUser,
+);
+
 organizationRouter.delete(
   "/:orgId",
   authMiddleware,
