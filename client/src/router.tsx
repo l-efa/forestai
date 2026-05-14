@@ -7,6 +7,7 @@ import ComponentTestPage from "./pages/ComponentTestPage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { OrgContextProvider } from "./context/OrgContext";
+import { ProjectContextProvider } from "./context/ProjectContext";
 
 // DASHBOARD
 import DashboardView from "./pages/DashboardView";
@@ -58,9 +59,18 @@ export default function Router() {
             <Route index element={<Organization />} />
             <Route path="project" element={<Projects />} />
             <Route path="members" element={<Members />} />
-            <Route path="project/:projectId" element={<Project />} />
-            <Route path="project/:projectId/files" element={<Files />} />
-            <Route path="project/:projectId/teams" element={<Teams />} />
+            <Route
+              path="project/:projectId"
+              element={
+                <ProjectContextProvider>
+                  <Outlet />
+                </ProjectContextProvider>
+              }
+            >
+              <Route index element={<Project />} />
+              <Route path="files" element={<Files />} />
+              <Route path="teams" element={<Teams />} />
+            </Route>
           </Route>
 
           <Route path="/settings" element={<Settings />} />

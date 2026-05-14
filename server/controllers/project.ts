@@ -86,6 +86,22 @@ const getProjectData = async (request: Request, response: Response) => {
   }
 };
 
+const getProjectUser = async (request: Request, response: Response) => {
+  const userId = request.user?.id;
+
+  try {
+    const user = await prisma.projectMember.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+
+    return response.status(200).json(user);
+  } catch (error) {
+    return response.status(500).json({ message: "Somethign went wrong" });
+  }
+};
+
 const deleteProject = async (request: Request, response: Response) => {
   const orgId = request.params.orgId as string;
   const projectId = request.params.projectId as string;
@@ -233,4 +249,5 @@ export default {
   getProjectMembers,
   setProjectMember,
   removeMember,
+  getProjectUser,
 };

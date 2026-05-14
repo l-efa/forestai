@@ -1,6 +1,6 @@
 import { apiSlice } from "./apiSlice";
 
-type Projects = {
+export type Projects = {
   name: string;
   id: string;
   createdAt: string;
@@ -13,7 +13,7 @@ type Project = {
   role: "owner" | "admin" | "member";
 };
 
-type projectMember = {
+export type projectMember = {
   userId: string;
   role: "admin" | "moderator" | "member";
   createdAt: Date;
@@ -46,6 +46,17 @@ const projectApi = apiSlice.injectEndpoints({
     >({
       query: ({ orgId, projectId }) => ({
         url: `/organization/${orgId}/project/${projectId}`,
+        method: "GET",
+      }),
+      providesTags: ["ProjectData"],
+    }),
+
+    getProjectUser: builder.query<
+      projectMember,
+      { orgId: string; projectId: string }
+    >({
+      query: ({ orgId, projectId }) => ({
+        url: `/organization/${orgId}/project/${projectId}/userinfo`,
         method: "GET",
       }),
       providesTags: ["ProjectData"],
@@ -109,4 +120,5 @@ export const {
   useGetProjectMembersQuery,
   useAddUserMutation,
   useRemoveProjectMemberMutation,
+  useGetProjectUserQuery,
 } = projectApi;

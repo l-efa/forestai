@@ -54,7 +54,9 @@ export default function Members() {
   return (
     <div className="p-3">
       <p>Members:</p>
-      <Button2 name="Invite member" changeHandler={toggleInviteMember} />
+      {orgUser.role !== "member" && (
+        <Button2 name="Invite member" changeHandler={toggleInviteMember} />
+      )}
       {members &&
         members.map((member) => (
           <div

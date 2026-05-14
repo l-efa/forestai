@@ -6,6 +6,7 @@ import {
 } from "@/api/project";
 import Button2 from "@/components/Button2";
 import Confirm from "@/components/Confirm";
+import { useProjectContext } from "@/context/ProjectContext";
 import { avatarColors, borderColors } from "@/utils/avatarColors";
 import { formatDate } from "@/utils/format";
 
@@ -16,6 +17,8 @@ export default function Teams() {
   const { orgId, projectId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState("");
+
+  const { projectData, projectUser } = useProjectContext();
 
   const { data: projectMembers } = useGetProjectMembersQuery({
     orgId: orgId!,
@@ -69,7 +72,9 @@ export default function Teams() {
 
   return (
     <div>
-      <Button2 name="Add members" changeHandler={toggleModal} />
+      {projectUser.role !== "member" && (
+        <Button2 name="Add members" changeHandler={toggleModal} />
+      )}
       <p>Teams</p>
       <div className="flex flex-col gap-2 p-3">
         {projectMembers &&
@@ -96,12 +101,14 @@ export default function Teams() {
                 <p className="text-xs text-content-secondary">
                   {formatDate(member.createdAt)}
                 </p>
-                <button
-                  onClick={() => handleRemoveClick(member.user.username)}
-                  className="mt-1 text-xs text-red-400 hover:text-red-300"
-                >
-                  Remove
-                </button>
+                {projectUser.role !== "member" && (
+                  <button
+                    onClick={() => handleRemoveClick(member.user.username)}
+                    className="mt-1 text-xs text-red-400 hover:text-red-300"
+                  >
+                    Remove
+                  </button>
+                )}
                 {showConfirm && (
                   <Confirm
                     info={`Are you sure you want to remove "${selectedUser}" from the group?`}

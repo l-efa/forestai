@@ -7,11 +7,12 @@ import { formatDate } from "@/utils/format";
 import Button2 from "@/components/Button2";
 import { useState } from "react";
 import Confirm from "@/components/Confirm";
+import { useOrgContext } from "@/context/OrgContext";
 
 export default function Organization() {
   const { orgId } = useParams();
-  const { data: org, isLoading } = useGetOrganizationQuery(orgId!);
   const [confirm, setConfirm] = useState(false);
+  const { org, orgUser, isloading } = useOrgContext();
 
   const navigate = useNavigate();
   const [deleteOrganization] = useDeleteOrganizationMutation();
@@ -24,13 +25,14 @@ export default function Organization() {
       console.log(response.data);
       navigate("/organization", { replace: true });
     }
+    toggleConfirm();
   };
 
   const toggleConfirm = () => setConfirm((prev) => !prev);
 
   return (
     <div>
-      {isLoading && <p>loading</p>}
+      {isloading && <p>loading</p>}
 
       <h1>{org?.name}</h1>
       <h1>{org?.id}</h1>
@@ -38,8 +40,9 @@ export default function Organization() {
       <h1>{formatDate(org?.createdAt ?? "")}</h1>
       <h1>{org?._count.members}</h1>
       <h1>{org?._count.projects}</h1>
-      <Button2 name="Delete organization" changeHandler={toggleConfirm} />
-
+      {orgUser.role !== "member" && (
+        <Button2 name="Delete organization" changeHandler={toggleConfirm} />
+      )}
       {confirm && (
         <Confirm
           info={`Are you sure you want to delete "${org?.name}"`}

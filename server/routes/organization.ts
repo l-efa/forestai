@@ -93,6 +93,12 @@ organizationRouter.get(
   projectController.getProjectData,
 );
 
+organizationRouter.get(
+  "/:orgId/project/:projectId/userinfo",
+  authMiddleware,
+  projectController.getProjectUser,
+);
+
 organizationRouter.delete(
   "/:orgId/project/:projectId",
   authMiddleware,
