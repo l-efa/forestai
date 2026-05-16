@@ -28,6 +28,7 @@ import Teams from "./pages/ProjectView/Teams";
 import Settings from "./pages/Settings";
 import User from "./pages/User/User";
 import Notifications from "./pages/User/Notifications";
+import Chat from "./pages/ProjectView/Chat";
 
 export default function Router() {
   return (
@@ -69,6 +70,7 @@ export default function Router() {
             >
               <Route index element={<Project />} />
               <Route path="files" element={<Files />} />
+              <Route path="chat" element={<Chat />} />
               <Route path="teams" element={<Teams />} />
             </Route>
           </Route>

@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import InputField from "@/components/InputField";
 import { useFindUsersQuery, useInviteUserToOrgMutation } from "@/api/user";
 import { useOrgContext } from "@/context/OrgContext";
+import Confirm from "@/components/Confirm";
 
 export default function Members() {
   const { orgId } = useParams();
@@ -18,6 +19,7 @@ export default function Members() {
   const [lookUpValue, setLookUpValue] = useState("");
   const [debouncedValue, setDebouncedValue] = useState("");
   const [invitedUser, setInvitedUser] = useState("");
+  const [removeModal, setRemoveModal] = useState(false);
 
   const { data: members } = useGetOrganizationMembersQuery(orgId!);
   const [inviteUser, { isLoading }] = useInviteUserToOrgMutation();
@@ -49,6 +51,11 @@ export default function Members() {
 
   const handleRemoveUser = async (userId: string) => {
     await removeUser({ userId: userId, orgId: orgId! });
+    toggleRemoveModal();
+  };
+
+  const toggleRemoveModal = () => {
+    setRemoveModal((prev) => !prev);
   };
 
   return (
@@ -78,15 +85,18 @@ export default function Members() {
                 {formatDate(member.createdAt)}
               </p>
               {orgUser.role !== "member" && (
-                <button
-                  onClick={() => {
-                    handleRemoveUser(member.userId);
-                  }}
-                >
-                  remove
-                </button>
+                <button onClick={toggleRemoveModal}>remove</button>
               )}
             </div>
+            {removeModal && (
+              <Confirm
+                info="Are you sure you want to remove this user from organizaton?"
+                confirmButton="Yes"
+                cancelButton="No"
+                onConfirm={() => handleRemoveUser(member.userId)}
+                onCancel={toggleRemoveModal}
+              />
+            )}
           </div>
         ))}
       {showModal && (

@@ -15,6 +15,7 @@ import {
   InfoIcon,
   Folder,
   UsersRound,
+  MessageCircle,
 } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
 import { avatarColors } from "@/utils/avatarColors";
@@ -46,6 +47,11 @@ const getProjectLinks = (orgId: string, projectId: string) => [
     name: "Files",
     url: `/organization/${orgId}/project/${projectId}/files`,
     icon: Folder,
+  },
+  {
+    name: "Chat",
+    url: `/organization/${orgId}/project/${projectId}/chat`,
+    icon: MessageCircle,
   },
   {
     name: "Teams",

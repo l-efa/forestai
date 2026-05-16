@@ -343,6 +343,15 @@ const deleteUserFromOrg = async (request: Request, response: Response) => {
       },
     });
 
+    await prisma.projectMember.deleteMany({
+      where: {
+        userId: userId,
+        project: {
+          organizationId: orgId,
+        },
+      },
+    });
+
     return response
       .status(200)
       .json({ message: "User deleted from organization" });
