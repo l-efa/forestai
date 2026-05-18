@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
 
 import {
   useGetProjectDataQuery,
@@ -7,6 +7,7 @@ import {
   type projectMember,
 } from "@/api/project";
 import { useParams } from "react-router-dom";
+import { socket } from "@/socket";
 
 type ProjectContextType = {
   projectData: Projects;
@@ -32,6 +33,18 @@ export const ProjectContextProvider = ({
     orgId: orgId!,
     projectId: projectId!,
   });
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    socket.connect();
+    socket.emit("join-project", projectId);
+
+    return () => {
+      socket.emit("leave-project", projectId);
+      socket.disconnect();
+    };
+  }, [projectId]);
 
   const value: ProjectContextType | undefined =
     projectData && projectUser
