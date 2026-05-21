@@ -123,4 +123,15 @@ organizationRouter.delete(
   projectController.removeMember,
 );
 
+organizationRouter.get(
+  "/:orgId/project/:projectId/chat",
+  authMiddleware,
+  projectController.getChatHistory,
+);
+
+organizationRouter.post(
+  "/:orgId/project/:projectId/chat",
+  authMiddleware,
+  projectController.addChatMessage,
+);
 export default organizationRouter;

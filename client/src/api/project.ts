@@ -30,6 +30,13 @@ type addUserType = {
   selectedUser: string;
 };
 
+type Message = {
+  id: string;
+  message: string;
+  username: string;
+  createdAt: Date;
+};
+
 const projectApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProjects: builder.query<Projects[], string>({
@@ -80,6 +87,7 @@ const projectApi = apiSlice.injectEndpoints({
         invalidatesTags: ["Projects"],
       },
     ),
+
     getProjectMembers: builder.query<
       projectMember[],
       { orgId: string; projectId: string }
@@ -90,6 +98,7 @@ const projectApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["ProjectTeams"],
     }),
+
     addUser: builder.mutation<void, addUserType>({
       query: ({ orgId, projectId, selectedUser }) => ({
         url: `/organization/${orgId}/project/${projectId}/teams`,
@@ -98,6 +107,7 @@ const projectApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["ProjectTeams"],
     }),
+
     removeProjectMember: builder.mutation<
       void,
       { orgId: string; projectId: string; removedUser: string }
@@ -108,6 +118,17 @@ const projectApi = apiSlice.injectEndpoints({
         body: { removedUser },
       }),
       invalidatesTags: ["ProjectTeams"],
+    }),
+
+    getChatHistory: builder.query<
+      Message[],
+      { orgId: string; projectId: string }
+    >({
+      query: ({ orgId, projectId }) => ({
+        url: `/organization/${orgId}/project/${projectId}/teams`,
+        method: "GET",
+      }),
+      providesTags: ["ChatHistory"],
     }),
   }),
 });
@@ -121,4 +142,5 @@ export const {
   useAddUserMutation,
   useRemoveProjectMemberMutation,
   useGetProjectUserQuery,
+  useGetChatHistoryQuery,
 } = projectApi;

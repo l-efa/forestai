@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import { json } from "node:stream/consumers";
 
 const getProjects = async (request: Request, response: Response) => {
   const orgId = request.params.orgId as string;
@@ -241,6 +242,57 @@ const removeMember = async (request: Request, response: Response) => {
   }
 };
 
+const addChatMessage = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+  const message = request.body.message as string;
+
+  try {
+    const user = await prisma.projectMember.findFirst({
+      where: { userId: userId, projectId: projectId },
+    });
+
+    if (!user) {
+      return response.status(400).json({ message: "Unauthorized" });
+    }
+
+    await prisma.message.create({
+      data: { message: message, projectId: projectId, userId: userId },
+    });
+
+    return response.status(200).json({ message: "Message created" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const getChatHistory = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+
+  try {
+    const user = await prisma.projectMember.findFirst({
+      where: { userId: userId, projectId: projectId },
+    });
+
+    if (!user) {
+      return response.status(400).json({ message: "Unauthorized" });
+    }
+
+    const chatHistory = await prisma.message.findMany({
+      where: {
+        projectId: projectId,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+
+    return response.status(200).json(chatHistory);
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   getProjects,
   addProject,
@@ -250,4 +302,6 @@ export default {
   setProjectMember,
   removeMember,
   getProjectUser,
+  addChatMessage,
+  getChatHistory,
 };
