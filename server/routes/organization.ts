@@ -128,10 +128,4 @@ organizationRouter.get(
   authMiddleware,
   projectController.getChatHistory,
 );
-
-organizationRouter.post(
-  "/:orgId/project/:projectId/chat",
-  authMiddleware,
-  projectController.addChatMessage,
-);
 export default organizationRouter;

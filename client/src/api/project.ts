@@ -30,11 +30,13 @@ type addUserType = {
   selectedUser: string;
 };
 
-type Message = {
+export type Message = {
   id: string;
   message: string;
-  username: string;
-  createdAt: Date;
+  createdAt: string;
+  user: {
+    username: string;
+  };
 };
 
 const projectApi = apiSlice.injectEndpoints({
@@ -125,7 +127,7 @@ const projectApi = apiSlice.injectEndpoints({
       { orgId: string; projectId: string }
     >({
       query: ({ orgId, projectId }) => ({
-        url: `/organization/${orgId}/project/${projectId}/teams`,
+        url: `/organization/${orgId}/project/${projectId}/chat`,
         method: "GET",
       }),
       providesTags: ["ChatHistory"],

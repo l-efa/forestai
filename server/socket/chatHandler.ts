@@ -1,5 +1,7 @@
 import type { Server, Socket } from "socket.io";
 
+import projectController from "../controllers/project";
+
 export const chatHandler = (io: Server, socket: Socket) => {
   socket.on("join-project", (projectId: string) => {
     const userId = socket.data.user;
@@ -11,12 +13,12 @@ export const chatHandler = (io: Server, socket: Socket) => {
     socket.leave(projectId);
   });
 
-  socket.on("send-message", (data: { projectId: string; message: string }) => {
-    // TODO: save message to database, then broadcast
-    io.to(data.projectId).emit("new-message", {
-      message: data.message,
-      socketId: socket.id,
-      timestamp: new Date().toISOString(),
-    });
+  socket.on("send-message", async (data: { projectId: string; message: string }) => {
+    const message = await projectController.addChatMessage(
+      socket.data.user.id,
+      data.projectId,
+      data.message,
+    );
+    io.to(data.projectId).emit("new-message", message);
   });
 };

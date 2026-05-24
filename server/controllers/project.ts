@@ -242,27 +242,34 @@ const removeMember = async (request: Request, response: Response) => {
   }
 };
 
-const addChatMessage = async (request: Request, response: Response) => {
-  const userId = request.user?.id as string;
-  const projectId = request.params.projectId as string;
-  const message = request.body.message as string;
-
+const addChatMessage = async (
+  userId: string,
+  projectId: string,
+  message: string,
+) => {
   try {
     const user = await prisma.projectMember.findFirst({
       where: { userId: userId, projectId: projectId },
     });
 
     if (!user) {
-      return response.status(400).json({ message: "Unauthorized" });
+      return;
     }
 
-    await prisma.message.create({
+    const newMessage = await prisma.message.create({
       data: { message: message, projectId: projectId, userId: userId },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
     });
 
-    return response.status(200).json({ message: "Message created" });
+    return newMessage;
   } catch (error) {
-    return response.status(500).json({ message: "Something went wrong" });
+    return;
   }
 };
 
@@ -283,7 +290,14 @@ const getChatHistory = async (request: Request, response: Response) => {
       where: {
         projectId: projectId,
       },
-      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "asc" },
       take: 50,
     });
 
