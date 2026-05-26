@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
 import { avatarColors } from "@/utils/avatarColors";
+import { useGetUserNotificationsQuery } from "@/api/user";
 
 const siderbarlinks = [
   { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -62,6 +63,9 @@ const getProjectLinks = (orgId: string, projectId: string) => [
 
 export default function Dashboard() {
   const [openUserMenu, setOpenUserMenu] = useState(false);
+
+  const { data: notifications } = useGetUserNotificationsQuery();
+  const notificationCount = notifications?.length ?? 0;
 
   const { pathname } = useLocation();
   const orgMatch = pathname.match(/^\/organization\/([^/]+)/);
@@ -121,7 +125,7 @@ export default function Dashboard() {
           )}
         </div>
         <div className="relative mt-auto">
-          {openUserMenu && <UserMenu />}
+          {openUserMenu && <UserMenu notificationCount={notificationCount} />}
           <button
             className="flex w-full items-center gap-3 border-t border-surface-border p-2 text-left"
             onClick={handleUserMenuClick}
@@ -132,6 +136,11 @@ export default function Dashboard() {
               {user?.username?.[0]?.toUpperCase() ?? "?"}
             </div>
             <span className="text-sm">{user?.username ?? "?"}</span>
+            {notificationCount > 0 && (
+              <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-forest-500 text-xs font-bold text-black">
+                {notificationCount}
+              </span>
+            )}
           </button>
         </div>
       </aside>

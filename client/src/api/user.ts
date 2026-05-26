@@ -11,7 +11,7 @@ type InviteInput = {
   orgId: string;
 };
 
-type Notifications = {
+export type Notifications = {
   id: string;
   createdAt: Date;
   organization: {

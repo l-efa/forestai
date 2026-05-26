@@ -5,11 +5,13 @@ import {
 import { useGetUserNotificationsQuery } from "@/api/user";
 import Button from "@/components/Button";
 import Button2 from "@/components/Button2";
+import type { Notifications } from "@/api/user";
 
 export default function Notifications() {
-  const { data: notifications } = useGetUserNotificationsQuery();
   const [acceptInvite] = useAcceptInvitationMutation();
   const [declineInvite] = useDeclineInvitationMutation();
+
+  const { data: notifications } = useGetUserNotificationsQuery();
 
   const handleNotificationAccept = async (inviteId: string) => {
     console.log("accept");
