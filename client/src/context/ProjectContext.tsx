@@ -37,12 +37,10 @@ export const ProjectContextProvider = ({
   useEffect(() => {
     if (!projectId) return;
 
-    socket.connect();
     socket.emit("join-project", projectId);
 
     return () => {
       socket.emit("leave-project", projectId);
-      socket.disconnect();
     };
   }, [projectId]);
 

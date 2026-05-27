@@ -1,5 +1,6 @@
 import { useLogoutUserMutation } from "@/api/auth";
 import Confirm from "@/components/Confirm";
+import { socket } from "@/socket";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -19,6 +20,7 @@ export default function UserMenu({
 
   const logUserOut = async () => {
     await logout();
+    socket.disconnect();
     window.location.href = "/";
   };
 

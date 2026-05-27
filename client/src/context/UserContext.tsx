@@ -1,6 +1,7 @@
 import { useGetMeQuery } from "@/api/auth";
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
 import type { User } from "@/types/User";
+import { socket } from "@/socket";
 
 type UserContextType = {
   user: User | undefined;
@@ -12,6 +13,10 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { data: user, isLoading, isError } = useGetMeQuery();
+
+  useEffect(() => {
+    if (user) socket.connect();
+  }, [user]);
 
   return (
     <UserContext.Provider value={{ user, isLoading, isError }}>

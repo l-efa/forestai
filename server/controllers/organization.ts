@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 
 import { prisma } from "../lib/prisma";
+import { io } from "../socket";
 
 const createOrganization = async (request: Request, response: Response) => {
   const { name } = request.body;
@@ -280,6 +281,8 @@ const inviteUserToOrg = async (request: Request, response: Response) => {
         invitedUserId: userId,
       },
     });
+
+    io.to(userId).emit("new_notification");
 
     return response.status(201).json({ message: "Invitation sent" });
   } catch (error) {

@@ -49,6 +49,7 @@ export default function Teams() {
       projectId: projectId!,
       selectedUser: selectedUser,
     });
+    toggleModal();
   };
 
   const handleRemoveClick = (userdId: string) => {

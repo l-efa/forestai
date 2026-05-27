@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import SidebarItem from "./SidebarItem";
 import UserMenu from "./UserMenu";
@@ -20,6 +20,9 @@ import {
 import { useUserContext } from "@/context/UserContext";
 import { avatarColors } from "@/utils/avatarColors";
 import { useGetUserNotificationsQuery } from "@/api/user";
+import { socket } from "@/socket";
+import { apiSlice } from "@/api/apiSlice";
+import { store } from "@/store";
 
 const siderbarlinks = [
   { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -63,9 +66,20 @@ const getProjectLinks = (orgId: string, projectId: string) => [
 
 export default function Dashboard() {
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const { data: notifications } = useGetUserNotificationsQuery();
   const notificationCount = notifications?.length ?? 0;
+
+  useEffect(() => {
+    socket.on("new_notification", () => {
+      store.dispatch(apiSlice.util.invalidateTags(["UserData"]));
+    });
+
+    return () => {
+      socket.off("new_notification");
+    };
+  }, []);
 
   const { pathname } = useLocation();
   const orgMatch = pathname.match(/^\/organization\/([^/]+)/);
@@ -74,6 +88,16 @@ export default function Dashboard() {
     /^\/organization\/[^/]+\/project\/([^/]+)/,
   );
   const projectId = projectMatch ? projectMatch[1] : null;
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setOpenUserMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleUserMenuClick = () => {
     setOpenUserMenu((prev) => !prev);
@@ -124,7 +148,7 @@ export default function Dashboard() {
             </>
           )}
         </div>
-        <div className="relative mt-auto">
+        <div className="relative mt-auto" ref={userMenuRef}>
           {openUserMenu && <UserMenu notificationCount={notificationCount} />}
           <button
             className="flex w-full items-center gap-3 border-t border-surface-border p-2 text-left"

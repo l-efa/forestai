@@ -3,8 +3,10 @@ import type { Server as HttpServer } from "http";
 import jwt from "jsonwebtoken";
 import { chatHandler } from "./chatHandler";
 
+export let io: Server;
+
 export const initSocket = (httpServer: HttpServer) => {
-  const io = new Server(httpServer, {
+  io = new Server(httpServer, {
     cors: {
       origin: "http://localhost:5173",
       credentials: true,
@@ -34,6 +36,8 @@ export const initSocket = (httpServer: HttpServer) => {
 
   io.on("connection", (socket) => {
     console.log("user connected:", socket.id);
+
+    socket.join(socket.data.user.id);
 
     chatHandler(io, socket);
 
