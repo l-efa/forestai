@@ -64,4 +64,24 @@ const getUserNotifications = async (request: Request, response: Response) => {
   }
 };
 
-export default { findUsers, getUserNotifications };
+const changeProfileColor = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const { profileColor } = request.body;
+
+  try {
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        profileColor: profileColor,
+      },
+    });
+
+    return response.status(200).json({ message: "Profile color changed" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export default { findUsers, getUserNotifications, changeProfileColor };

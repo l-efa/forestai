@@ -43,11 +43,22 @@ const userApi = apiSlice.injectEndpoints({
       query: () => ({ url: `/user/notifications`, method: "GET" }),
       providesTags: ["UserData"],
     }),
+
+    changeProfileColor: builder.mutation<void, string>({
+      query: (profileColor) => ({
+        url: `/user/profileColor`,
+        method: "PUT",
+        body: { profileColor },
+      }),
+      invalidatesTags: ["User"],
+    })
   }),
 });
+
 
 export const {
   useFindUsersQuery,
   useInviteUserToOrgMutation,
   useGetUserNotificationsQuery,
+  useChangeProfileColorMutation,
 } = userApi;

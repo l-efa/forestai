@@ -7,7 +7,7 @@ import Notifications from "@/pages/User/Notifications";
 import Settings from "@/pages/Settings";
 
 const userMenuLinks = [
-  { name: "User", tab: "profile" },
+  { name: "Profile", tab: "profile" },
   { name: "Settings", tab: "settings" },
   { name: "Notifications", tab: "notifications" },
 ] as const;
@@ -45,7 +45,7 @@ export default function UserMenu({
       <div className="absolute bottom-full left-2 right-2 z-10 mb-3 flex flex-col rounded-lg border border-surface-border bg-surface-card p-2 shadow-cardDrop">
         {userMenuLinks.map((link) => (
           <button
-            className="flex items-center text-sm"
+            className="flex items-center rounded px-2 py-1.5 text-sm hover:bg-surface-active"
             key={link.name}
             onClick={() => toggleUserMenu(link.tab)}
           >
@@ -57,7 +57,7 @@ export default function UserMenu({
             )}
           </button>
         ))}
-        <button className="text-left text-sm" onClick={toggleConfirm}>
+        <button className="rounded px-2 py-1.5 text-left text-sm hover:bg-surface-active" onClick={toggleConfirm}>
           Logout
         </button>
 
