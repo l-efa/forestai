@@ -3,6 +3,7 @@ import Button2 from "@/components/Button2";
 import InputField from "@/components/InputField";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { formatDate } from "@/utils/format";
 
 export default function Projects() {
   const { orgId } = useParams();
@@ -52,13 +53,18 @@ export default function Projects() {
           </div>
         </>
       )}
-      {projects?.map((project) => (
-        <Link to={`${project.id}`} className="p-2" key={project.id}>
-          <p>{project.name}</p>
-          <p>{project.id}</p>
-          <p>{project.createdAt}</p>
-        </Link>
-      ))}
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {projects?.map((project) => (
+          <Link
+            to={`${project.id}`}
+            key={project.id}
+            className="flex flex-col gap-2 rounded-lg border border-surface-border bg-surface-card p-4 shadow-cardDrop hover:bg-surface-active"
+          >
+            <p className="font-medium text-content-primary">{project.name}</p>
+            <p className="text-xs text-content-muted">{formatDate(project.createdAt)}</p>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
