@@ -18,4 +18,12 @@ userRouter.put(
   userController.changeProfileColor,
 );
 
+userRouter.get("/userSettings", authMiddleware, userController.getUserSettings);
+
+userRouter.put(
+  "/userSettings",
+  authMiddleware,
+  userController.changeUserSettings,
+);
+
 export default userRouter;

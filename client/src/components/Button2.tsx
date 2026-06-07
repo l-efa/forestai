@@ -17,6 +17,7 @@ export default function Button2({
 
   return (
     <button
+      type="button"
       disabled={disabled}
       onClick={onClick}
       className={`text-surface-black m-2 rounded-xl bg-greenGradient px-8 py-2 text-sm font-bold transition-all duration-150 hover:brightness-125 active:scale-95 active:brightness-90 disabled:opacity-50 disabled:pointer-events-none ${className}`}

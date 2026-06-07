@@ -24,6 +24,12 @@ export type Notifications = {
   };
 };
 
+export type userSettings = {
+  id: string;
+  userId: string;
+  invites: boolean;
+};
+
 const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     findUsers: builder.query<fetchedUsers[], string>({
@@ -51,14 +57,29 @@ const userApi = apiSlice.injectEndpoints({
         body: { profileColor },
       }),
       invalidatesTags: ["User"],
-    })
+    }),
+
+    getUserSettings: builder.query<userSettings, void>({
+      query: () => ({ url: `/user/userSettings`, method: "GET" }),
+      providesTags: ["UserSettings"],
+    }),
+
+    changeUserSettings: builder.mutation<void, { invites: boolean }>({
+      query: (settings) => ({
+        url: `/user/userSettings`,
+        method: "PUT",
+        body: { settings },
+      }),
+      invalidatesTags: ["UserSettings"],
+    }),
   }),
 });
-
 
 export const {
   useFindUsersQuery,
   useInviteUserToOrgMutation,
   useGetUserNotificationsQuery,
   useChangeProfileColorMutation,
+  useGetUserSettingsQuery,
+  useChangeUserSettingsMutation,
 } = userApi;

@@ -22,6 +22,7 @@ model User {
   sentInvites        Invitation[] @relation("sentInvites")
   receivedInvites    Invitation[] @relation("receivedInvites")
   messages           Message[]
+  settings           UserSettings?
 }
 
 model Organization {
@@ -93,4 +94,11 @@ model Message {
   userId      String
   user        User      @relation(fields:[userId], references: [id])
   createdAt   DateTime  @default(now())
+}
+
+model UserSettings {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  user        User      @relation(fields:[userId], references: [id])
+  invites     Boolean   @default(true)
 }

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { prisma } from "../lib/prisma";
 
 const findUsers = async (request: Request, response: Response) => {
@@ -84,4 +84,50 @@ const changeProfileColor = async (request: Request, response: Response) => {
   }
 };
 
-export default { findUsers, getUserNotifications, changeProfileColor };
+const getUserSettings = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+
+  if (!userId) {
+    return response.status(400).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const settings = await prisma.userSettings.findUnique({
+      where: { userId: userId },
+    });
+
+    return response.status(200).json(settings);
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const changeUserSettings = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const { settings } = request.body;
+
+  console.log("settings: ", settings);
+
+  try {
+    await prisma.userSettings.upsert({
+      where: { userId },
+      update: settings,
+      create: {
+        userId,
+        ...settings,
+      },
+    });
+
+    return response.status(200).json({ message: "Settings updated" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export default {
+  findUsers,
+  getUserNotifications,
+  changeProfileColor,
+  getUserSettings,
+  changeUserSettings,
+};

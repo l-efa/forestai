@@ -34,11 +34,17 @@ const Register = async (request: Request, response: Response) => {
 
     const hashedPassword = await argon2.hash(password);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email: email,
         username: username,
         password: hashedPassword,
+      },
+    });
+
+    await prisma.userSettings.create({
+      data: {
+        userId: user.id,
       },
     });
 

@@ -17,6 +17,7 @@ export const apiSlice = createApi({
     "ProjectData",
     "ProjectTeams",
     "ChatHistory",
+    "UserSettings",
   ],
   endpoints: () => ({}), // empty — features inject their own
 });
