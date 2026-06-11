@@ -2,6 +2,7 @@ import Button from "@/components/Button";
 import Button2 from "@/components/Button2";
 import { currentMonth, currentYear } from "@/utils/dates";
 import { useState } from "react";
+import ReminderForm from "./ReminderForm";
 
 export default function Calendar() {
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -9,7 +10,11 @@ export default function Calendar() {
   const [year, setYear] = useState(currentYear);
   const [month, setMonth] = useState(currentMonth);
 
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState<string>("");
+
+  const [openReminderForm, setOpenReminderForm] = useState(false);
+
+  const [reminder, setReminder] = useState("");
 
   const offset = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -29,6 +34,7 @@ export default function Calendar() {
     { length: (7 - ((leading.length + current.length) % 7)) % 7 },
     (_, i) => ({ day: i + 1, current: false }),
   );
+
   const cells = [...leading, ...current, ...trailing];
 
   const handlePreviousMonth = () => {
@@ -55,18 +61,24 @@ export default function Calendar() {
   };
 
   const handleSelectedDate = (date: any) => {
+    setOpenReminderForm(true);
     if (date.current) {
       setSelectedDate(date.day);
     }
   };
 
+  const handleCloseForm = () => {
+    setReminder("");
+    setOpenReminderForm(false);
+  };
+
   console.log(selectedDate, month, year);
+
+  console.log(reminder);
 
   return (
     <div>
       <p>Calendar</p>
-
-      <div>{}</div>
 
       <div className="max-w-4xl">
         <div>
@@ -89,7 +101,7 @@ export default function Calendar() {
             <div
               key={i}
               className="aspect-square border border-surface-border p-1"
-              onClick={() => handleSelectedDate(day)}
+              onClick={() => day.current && handleSelectedDate(day)}
             >
               <span className={!day.current ? "opacity-30" : ""}>
                 {day.day}
@@ -98,6 +110,17 @@ export default function Calendar() {
           ))}
         </div>
       </div>
+
+      {openReminderForm && (
+        <ReminderForm
+          date={selectedDate}
+          month={month}
+          year={year}
+          onCancel={handleCloseForm}
+          reminder={reminder}
+          setReminder={setReminder}
+        />
+      )}
     </div>
   );
 }
