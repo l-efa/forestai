@@ -11,9 +11,11 @@ export default function Settings() {
   const [updateUserSettings] = useChangeUserSettingsMutation();
 
   const [allowInvites, setAllowInvites] = useState<boolean>(true);
+  const [showEmail, setShowEmail] = useState<boolean>(true);
 
-  const handleAllowInvites = () => {
-    setAllowInvites((prev) => !prev);
+  const handleSwitch = (switchName: string) => {
+    if (switchName === "AllowInvites") setAllowInvites((prev) => !prev);
+    if (switchName === "ShowEmail") setShowEmail((prev) => !prev);
   };
 
   useEffect(() => {
@@ -36,7 +38,14 @@ export default function Settings() {
           label="Allow organization invites"
           labelLocation="right"
           style="switch"
-          onChange={handleAllowInvites}
+          onChange={() => handleSwitch("AllowInvites")}
+        />
+        <Switch
+          checked={showEmail ?? true}
+          label="Show email to other org members"
+          labelLocation="right"
+          style="switch"
+          onChange={() => handleSwitch("ShowEmail")}
         />
       </div>
       <Button2 name="Update" changeHandler={handleUserSettingsUpdate} />

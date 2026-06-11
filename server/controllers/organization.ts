@@ -274,6 +274,16 @@ const inviteUserToOrg = async (request: Request, response: Response) => {
       return response.status(409).json({ message: "Invitation already sent" });
     }
 
+    const disabledInvitations = await prisma.userSettings.findUnique({
+      where: { userId, invites: false },
+    });
+
+    if (disabledInvitations) {
+      return response
+        .status(403)
+        .json({ message: "User has disabled invitations" });
+    }
+
     await prisma.invitation.create({
       data: {
         organizationId: orgId,
