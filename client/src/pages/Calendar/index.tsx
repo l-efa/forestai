@@ -3,6 +3,7 @@ import Button2 from "@/components/Button2";
 import { currentMonth, currentYear } from "@/utils/dates";
 import { useState } from "react";
 import ReminderForm from "./ReminderForm";
+import { useGetUserCalendarQuery, useNewReminderMutation } from "@/api/user";
 
 export default function Calendar() {
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -16,23 +17,37 @@ export default function Calendar() {
 
   const [reminder, setReminder] = useState("");
 
+  const { data: reminders } = useGetUserCalendarQuery({ month, year });
+  console.log(reminders);
+
+  const [newReminder] = useNewReminderMutation();
+
   const offset = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrevMonth = new Date(year, month, 0).getDate();
 
+  const prevMonth = month === 0 ? 11 : month - 1;
+  const prevYear = month === 0 ? year - 1 : year;
+  const nextMonth = month === 11 ? 0 : month + 1;
+  const nextYear = month === 11 ? year + 1 : year;
+
   const leading = Array.from({ length: offset }, (_, i) => ({
     day: daysInPrevMonth - offset + i + 1,
     current: false,
+    month: prevMonth,
+    year: prevYear,
   }));
 
   const current = Array.from({ length: daysInMonth }, (_, i) => ({
     day: i + 1,
     current: true,
+    month,
+    year,
   }));
 
   const trailing = Array.from(
     { length: (7 - ((leading.length + current.length) % 7)) % 7 },
-    (_, i) => ({ day: i + 1, current: false }),
+    (_, i) => ({ day: i + 1, current: false, month: nextMonth, year: nextYear }),
   );
 
   const cells = [...leading, ...current, ...trailing];
@@ -72,9 +87,12 @@ export default function Calendar() {
     setOpenReminderForm(false);
   };
 
-  console.log(selectedDate, month, year);
+  const handleNewReminder = async () => {
+    await newReminder({ date: selectedDate, month, year, reminder });
+    handleCloseForm();
+  };
 
-  console.log(reminder);
+  console.log(reminders);
 
   return (
     <div>
@@ -97,17 +115,33 @@ export default function Calendar() {
         </header>
 
         <div className="grid grid-cols-7">
-          {cells.map((day, i) => (
-            <div
-              key={i}
-              className="aspect-square border border-surface-border p-1"
-              onClick={() => day.current && handleSelectedDate(day)}
-            >
-              <span className={!day.current ? "opacity-30" : ""}>
-                {day.day}
-              </span>
-            </div>
-          ))}
+          {cells.map((day, i) => {
+            const dayReminders = reminders?.filter((r) => {
+              const d = new Date(r.date);
+              return (
+                d.getUTCDate() === day.day &&
+                d.getUTCMonth() === day.month &&
+                d.getUTCFullYear() === day.year
+              );
+            });
+
+            return (
+              <div
+                key={i}
+                className="aspect-square border border-surface-border p-1"
+                onClick={() => day.current && handleSelectedDate(day)}
+              >
+                <span className={!day.current ? "opacity-30" : ""}>
+                  {day.day}
+                </span>
+                {dayReminders?.map((r) => (
+                  <p key={r.id} className="truncate text-xs text-forest-400">
+                    {r.reminder}
+                  </p>
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -119,6 +153,7 @@ export default function Calendar() {
           onCancel={handleCloseForm}
           reminder={reminder}
           setReminder={setReminder}
+          handleNewReminder={handleNewReminder}
         />
       )}
     </div>

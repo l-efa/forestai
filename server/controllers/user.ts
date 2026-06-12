@@ -124,10 +124,57 @@ const changeUserSettings = async (request: Request, response: Response) => {
   }
 };
 
+const getUserCalendar = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const month = Number(request.query.month);
+  const year = Number(request.query.year);
+
+  const start = new Date(Date.UTC(year, month - 1, 1));
+  const end = new Date(Date.UTC(year, month + 2, 1));
+
+  try {
+    const reminders = await prisma.calendarReminder.findMany({
+      where: { userId, date: { gte: start, lt: end } },
+    });
+
+    return response.status(200).json(reminders);
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const newReminder = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const { date, month, year } = request.body;
+  const { reminder } = request.body;
+
+  if (!date || !month || !year) {
+    return response.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!userId) {
+    return response.status(403).json({ message: "Unauthorized" });
+  }
+
+  const newDate = new Date(Date.UTC(year, month, date));
+
+  try {
+    await prisma.calendarReminder.create({
+      data: { date: newDate, reminder, userId },
+    });
+
+    return response.status(200).json({ message: "Reminder created" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   findUsers,
   getUserNotifications,
   changeProfileColor,
   getUserSettings,
   changeUserSettings,
+  getUserCalendar,
+  newReminder,
 };

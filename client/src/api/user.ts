@@ -30,6 +30,13 @@ export type userSettings = {
   invites: boolean;
 };
 
+export type userCalendar = {
+  id: string;
+  userId: string;
+  reminder: string;
+  date: Date;
+};
+
 const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     findUsers: builder.query<fetchedUsers[], string>({
@@ -72,6 +79,29 @@ const userApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["UserSettings"],
     }),
+
+    getUserCalendar: builder.query<
+      userCalendar[],
+      { month: number; year: number }
+    >({
+      query: ({ month, year }) => ({
+        url: `/user/userCalendar?month=${month}&year=${year}`,
+        method: "GET",
+      }),
+      providesTags: ["UserCalendar"],
+    }),
+
+    newReminder: builder.mutation<
+      void,
+      { date: string; month: number; year: number; reminder: string }
+    >({
+      query: ({ date, month, year, reminder }) => ({
+        url: `/user/userCalendar`,
+        method: "PUT",
+        body: { date, month, year, reminder },
+      }),
+      invalidatesTags: ["UserCalendar"],
+    }),
   }),
 });
 
@@ -82,4 +112,6 @@ export const {
   useChangeProfileColorMutation,
   useGetUserSettingsQuery,
   useChangeUserSettingsMutation,
+  useGetUserCalendarQuery,
+  useNewReminderMutation,
 } = userApi;

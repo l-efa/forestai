@@ -26,4 +26,8 @@ userRouter.put(
   userController.changeUserSettings,
 );
 
+userRouter.get("/userCalendar", authMiddleware, userController.getUserCalendar);
+
+userRouter.put("/userCalendar", authMiddleware, userController.newReminder);
+
 export default userRouter;

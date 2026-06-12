@@ -7,6 +7,7 @@ interface ReminderFormProps {
   onCancel: () => void;
   reminder: string;
   setReminder: (value: string) => void;
+  handleNewReminder: () => void;
 }
 
 export default function ReminderForm({
@@ -16,6 +17,7 @@ export default function ReminderForm({
   onCancel,
   reminder,
   setReminder,
+  handleNewReminder,
 }: ReminderFormProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
@@ -42,7 +44,10 @@ export default function ReminderForm({
           >
             Cancel
           </button>
-          <button className="rounded-button bg-greenGradient px-6 py-2 text-sm font-bold text-surface-black">
+          <button
+            className="rounded-button bg-greenGradient px-6 py-2 text-sm font-bold text-surface-black"
+            onClick={handleNewReminder}
+          >
             Add
           </button>
         </div>

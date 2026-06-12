@@ -23,6 +23,7 @@ model User {
   receivedInvites    Invitation[] @relation("receivedInvites")
   messages           Message[]
   settings           UserSettings?
+  reminders          CalendarReminder[]
 }
 
 model Organization {
@@ -101,4 +102,13 @@ model UserSettings {
   userId      String    @unique
   user        User      @relation(fields:[userId], references: [id])
   invites     Boolean   @default(true)
+}
+
+model CalendarReminder {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields:[userId], references: [id])
+  reminder    String
+  date        DateTime
+  createdAt   DateTime  @default(now())  
 }
