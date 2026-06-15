@@ -146,7 +146,9 @@ const getUserCalendar = async (request: Request, response: Response) => {
 const newReminder = async (request: Request, response: Response) => {
   const userId = request.user?.id as string;
   const { date, month, year } = request.body;
-  const { reminder } = request.body;
+  const { reminder, reminderTime } = request.body;
+
+  console.log(reminderTime);
 
   if (!date || !month || !year) {
     return response.status(400).json({ message: "All fields are required" });
@@ -160,7 +162,7 @@ const newReminder = async (request: Request, response: Response) => {
 
   try {
     await prisma.calendarReminder.create({
-      data: { date: newDate, reminder, userId },
+      data: { date: newDate, reminder, userId, time: reminderTime },
     });
 
     return response.status(200).json({ message: "Reminder created" });

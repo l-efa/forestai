@@ -17,6 +17,10 @@ export default function Calendar() {
 
   const [reminder, setReminder] = useState("");
 
+  const [reminderTime, setReminderTime] = useState(
+    new Date().toTimeString().slice(0, 5),
+  );
+
   const { data: reminders } = useGetUserCalendarQuery({ month, year });
   console.log(reminders);
 
@@ -47,7 +51,12 @@ export default function Calendar() {
 
   const trailing = Array.from(
     { length: (7 - ((leading.length + current.length) % 7)) % 7 },
-    (_, i) => ({ day: i + 1, current: false, month: nextMonth, year: nextYear }),
+    (_, i) => ({
+      day: i + 1,
+      current: false,
+      month: nextMonth,
+      year: nextYear,
+    }),
   );
 
   const cells = [...leading, ...current, ...trailing];
@@ -84,11 +93,18 @@ export default function Calendar() {
 
   const handleCloseForm = () => {
     setReminder("");
+    setReminderTime(new Date().toTimeString().slice(0, 5));
     setOpenReminderForm(false);
   };
 
   const handleNewReminder = async () => {
-    await newReminder({ date: selectedDate, month, year, reminder });
+    await newReminder({
+      date: selectedDate,
+      month,
+      year,
+      reminder,
+      reminderTime,
+    });
     handleCloseForm();
   };
 
@@ -128,14 +144,18 @@ export default function Calendar() {
             return (
               <div
                 key={i}
-                className="aspect-square border border-surface-border p-1"
+                className={`aspect-square p-1 ${dayReminders?.length ? "border-2 border-forest-500" : "border border-surface-border"}`}
                 onClick={() => day.current && handleSelectedDate(day)}
               >
                 <span className={!day.current ? "opacity-30" : ""}>
                   {day.day}
                 </span>
                 {dayReminders?.map((r) => (
-                  <p key={r.id} className="truncate text-xs text-forest-400">
+                  <p
+                    key={r.id}
+                    className="my-0.5 truncate bg-forest-500 p-1 text-xs text-black"
+                  >
+                    {r.time && <span>{r.time} </span>}
                     {r.reminder}
                   </p>
                 ))}
@@ -154,6 +174,9 @@ export default function Calendar() {
           reminder={reminder}
           setReminder={setReminder}
           handleNewReminder={handleNewReminder}
+          reminderTime={reminderTime}
+          setReminderTime={setReminderTime}
+          reminders={reminders ?? []}
         />
       )}
     </div>

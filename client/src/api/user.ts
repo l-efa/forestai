@@ -35,6 +35,7 @@ export type userCalendar = {
   userId: string;
   reminder: string;
   date: Date;
+  time?: string;
 };
 
 const userApi = apiSlice.injectEndpoints({
@@ -93,12 +94,18 @@ const userApi = apiSlice.injectEndpoints({
 
     newReminder: builder.mutation<
       void,
-      { date: string; month: number; year: number; reminder: string }
+      {
+        date: string;
+        month: number;
+        year: number;
+        reminder: string;
+        reminderTime: string;
+      }
     >({
-      query: ({ date, month, year, reminder }) => ({
+      query: ({ date, month, year, reminder, reminderTime }) => ({
         url: `/user/userCalendar`,
         method: "PUT",
-        body: { date, month, year, reminder },
+        body: { date, month, year, reminder, reminderTime },
       }),
       invalidatesTags: ["UserCalendar"],
     }),

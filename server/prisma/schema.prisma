@@ -110,5 +110,6 @@ model CalendarReminder {
   user        User      @relation(fields:[userId], references: [id])
   reminder    String
   date        DateTime
+  time        String?
   createdAt   DateTime  @default(now())  
 }
