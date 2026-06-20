@@ -111,5 +111,7 @@ model CalendarReminder {
   reminder    String
   date        DateTime
   time        String?
+  duration    Int?
+  color       String?
   createdAt   DateTime  @default(now())  
 }

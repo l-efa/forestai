@@ -146,7 +146,8 @@ const getUserCalendar = async (request: Request, response: Response) => {
 const newReminder = async (request: Request, response: Response) => {
   const userId = request.user?.id as string;
   const { date, month, year } = request.body;
-  const { reminder, reminderTime } = request.body;
+  const { reminder, reminderTime, duration, color } = request.body;
+  console.log(request.body);
 
   console.log(reminderTime);
 
@@ -162,10 +163,36 @@ const newReminder = async (request: Request, response: Response) => {
 
   try {
     await prisma.calendarReminder.create({
-      data: { date: newDate, reminder, userId, time: reminderTime },
+      data: {
+        date: newDate,
+        reminder,
+        userId,
+        time: reminderTime,
+        duration,
+        color,
+      },
     });
 
     return response.status(200).json({ message: "Reminder created" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const removeReminder = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const reminderId = request.params.reminderId as string;
+
+  console.log(reminderId);
+
+  try {
+    await prisma.calendarReminder.delete({
+      where: {
+        id: reminderId,
+      },
+    });
+
+    return response.status(200).json({ message: "Reminder removed" });
   } catch (error) {
     return response.status(500).json({ message: "Something went wrong" });
   }
@@ -179,4 +206,5 @@ export default {
   changeUserSettings,
   getUserCalendar,
   newReminder,
+  removeReminder,
 };

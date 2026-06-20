@@ -1,6 +1,15 @@
 import Button from "@/components/Button";
 import Button2 from "@/components/Button2";
 import { currentMonth, currentYear } from "@/utils/dates";
+import { reminderColors } from "@/utils/avatarColors";
+
+const getEndTime = (time: string, duration: number) => {
+  const [h, m] = time.split(":").map(Number);
+  const total = h * 60 + m + duration;
+  const endH = Math.floor(total / 60) % 24;
+  const endM = total % 60;
+  return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
+};
 import { useState } from "react";
 import ReminderForm from "./ReminderForm";
 import { useGetUserCalendarQuery, useNewReminderMutation } from "@/api/user";
@@ -16,10 +25,11 @@ export default function Calendar() {
   const [openReminderForm, setOpenReminderForm] = useState(false);
 
   const [reminder, setReminder] = useState("");
-
   const [reminderTime, setReminderTime] = useState(
     new Date().toTimeString().slice(0, 5),
   );
+  const [reminderDuration, setReminderDuration] = useState(15);
+  const [reminderColor, setReminderColor] = useState("green");
 
   const { data: reminders } = useGetUserCalendarQuery({ month, year });
   console.log(reminders);
@@ -104,6 +114,8 @@ export default function Calendar() {
       year,
       reminder,
       reminderTime,
+      duration: reminderDuration,
+      color: reminderColor,
     });
     handleCloseForm();
   };
@@ -111,10 +123,8 @@ export default function Calendar() {
   console.log(reminders);
 
   return (
-    <div>
-      <p>Calendar</p>
-
-      <div className="max-w-4xl">
+    <div className="flex flex-row">
+      <main className="max-w-4xl">
         <div>
           {new Date(year, month).toLocaleDateString("en-US", { month: "long" })}{" "}
           {year}
@@ -139,7 +149,7 @@ export default function Calendar() {
                 d.getUTCMonth() === day.month &&
                 d.getUTCFullYear() === day.year
               );
-            });
+            })?.sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
 
             return (
               <div
@@ -153,9 +163,14 @@ export default function Calendar() {
                 {dayReminders?.map((r) => (
                   <p
                     key={r.id}
-                    className="my-0.5 truncate bg-forest-500 p-1 text-xs text-black"
+                    className={`my-0.5 truncate p-1 text-xs text-black ${r.color ? reminderColors[r.color] : "bg-forest-500"}`}
                   >
-                    {r.time && <span>{r.time} </span>}
+                    {r.time && (
+                      <span>
+                        {r.time}
+                        {r.duration && ` - ${getEndTime(r.time, Number(r.duration))}`}{" "}
+                      </span>
+                    )}
                     {r.reminder}
                   </p>
                 ))}
@@ -163,7 +178,7 @@ export default function Calendar() {
             );
           })}
         </div>
-      </div>
+      </main>
 
       {openReminderForm && (
         <ReminderForm
@@ -177,8 +192,62 @@ export default function Calendar() {
           reminderTime={reminderTime}
           setReminderTime={setReminderTime}
           reminders={reminders ?? []}
+          duration={reminderDuration}
+          setDuration={setReminderDuration}
+          reminderColor={reminderColor}
+          setReminderColor={setReminderColor}
         />
       )}
+
+      <aside className="p-2">
+        <p>upcoming</p>
+        {(() => {
+          const now = new Date();
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+
+          const isDay = (date: Date, ref: Date) => {
+            const d = new Date(date);
+            return (
+              d.getUTCDate() === ref.getDate() &&
+              d.getUTCMonth() === ref.getMonth() &&
+              d.getUTCFullYear() === ref.getFullYear()
+            );
+          };
+
+          const todayReminders = reminders?.filter((r) => isDay(r.date, now));
+          const tomorrowReminders = reminders?.filter((r) =>
+            isDay(r.date, tomorrow),
+          );
+
+          return (
+            <>
+              <div>
+                <p className="text-xs text-content-muted">Today</p>
+                {todayReminders?.map((r) => (
+                  <p key={r.id} className="text-sm text-content-soft">
+                    {r.reminder}
+                    {r.time && (
+                      <span className="text-content-muted">{r.time} </span>
+                    )}
+                  </p>
+                ))}
+              </div>
+              <div>
+                <p className="text-xs text-content-muted">Tomorrow</p>
+                {tomorrowReminders?.map((r) => (
+                  <p key={r.id} className="pb-4 text-sm text-content-soft">
+                    {r.reminder}
+                    {r.time && (
+                      <span className="pl-4 text-content-muted">{r.time} </span>
+                    )}
+                  </p>
+                ))}
+              </div>
+            </>
+          );
+        })()}
+      </aside>
     </div>
   );
 }
