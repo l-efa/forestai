@@ -3,7 +3,7 @@ import Button2 from "@/components/Button2";
 import { currentMonth, currentYear } from "@/utils/dates";
 import { reminderColors } from "@/utils/avatarColors";
 
-const getEndTime = (time: string, duration: number) => {
+export const getEndTime = (time: string, duration: number) => {
   const [h, m] = time.split(":").map(Number);
   const total = h * 60 + m + duration;
   const endH = Math.floor(total / 60) % 24;
@@ -124,7 +124,7 @@ export default function Calendar() {
 
   return (
     <div className="flex flex-row">
-      <main className="max-w-4xl">
+      <main className="w-full max-w-4xl">
         <div>
           {new Date(year, month).toLocaleDateString("en-US", { month: "long" })}{" "}
           {year}
@@ -142,19 +142,21 @@ export default function Calendar() {
 
         <div className="grid grid-cols-7">
           {cells.map((day, i) => {
-            const dayReminders = reminders?.filter((r) => {
-              const d = new Date(r.date);
-              return (
-                d.getUTCDate() === day.day &&
-                d.getUTCMonth() === day.month &&
-                d.getUTCFullYear() === day.year
-              );
-            })?.sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
+            const dayReminders = reminders
+              ?.filter((r) => {
+                const d = new Date(r.date);
+                return (
+                  d.getUTCDate() === day.day &&
+                  d.getUTCMonth() === day.month &&
+                  d.getUTCFullYear() === day.year
+                );
+              })
+              ?.sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
 
             return (
               <div
                 key={i}
-                className={`aspect-square p-1 ${dayReminders?.length ? "border-2 border-forest-500" : "border border-surface-border"}`}
+                className={`aspect-square overflow-hidden p-1 ${dayReminders?.length ? "border-2 border-forest-500" : "border border-surface-border"}`}
                 onClick={() => day.current && handleSelectedDate(day)}
               >
                 <span className={!day.current ? "opacity-30" : ""}>
@@ -168,7 +170,8 @@ export default function Calendar() {
                     {r.time && (
                       <span>
                         {r.time}
-                        {r.duration && ` - ${getEndTime(r.time, Number(r.duration))}`}{" "}
+                        {r.duration &&
+                          ` - ${getEndTime(r.time, Number(r.duration))}`}{" "}
                       </span>
                     )}
                     {r.reminder}
@@ -224,25 +227,39 @@ export default function Calendar() {
             <>
               <div>
                 <p className="text-xs text-content-muted">Today</p>
-                {todayReminders?.map((r) => (
-                  <p key={r.id} className="text-sm text-content-soft">
-                    {r.reminder}
-                    {r.time && (
-                      <span className="text-content-muted">{r.time} </span>
-                    )}
-                  </p>
-                ))}
+                {currentMonth === month &&
+                  todayReminders?.map((r) => (
+                    <p key={r.id} className="text-sm text-content-soft">
+                      {r.time && r.duration && (
+                        <span className="text-content-muted">
+                          {r.time} -{" "}
+                          {getEndTime(r.time, Number(r.duration))}{" "}
+                        </span>
+                      )}
+                      {r.time && !r.duration && (
+                        <span className="text-content-muted">{r.time} </span>
+                      )}
+                      {r.reminder}
+                    </p>
+                  ))}
               </div>
               <div>
                 <p className="text-xs text-content-muted">Tomorrow</p>
-                {tomorrowReminders?.map((r) => (
-                  <p key={r.id} className="pb-4 text-sm text-content-soft">
-                    {r.reminder}
-                    {r.time && (
-                      <span className="pl-4 text-content-muted">{r.time} </span>
-                    )}
-                  </p>
-                ))}
+                {currentMonth === month &&
+                  tomorrowReminders?.map((r) => (
+                    <p key={r.id} className="pb-4 text-sm text-content-soft">
+                      {r.time && r.duration && (
+                        <span className="text-content-muted">
+                          {r.time} -{" "}
+                          {getEndTime(r.time, Number(r.duration))}{" "}
+                        </span>
+                      )}
+                      {r.time && !r.duration && (
+                        <span className="text-content-muted">{r.time} </span>
+                      )}
+                      {r.reminder}
+                    </p>
+                  ))}
               </div>
             </>
           );

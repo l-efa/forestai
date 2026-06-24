@@ -1,6 +1,7 @@
 import { useRemoveReminderMutation, type userCalendar } from "@/api/user";
 import InputField from "@/components/InputField";
 import { reminderColors } from "@/utils/avatarColors";
+import { getEndTime } from ".";
 
 interface ReminderFormProps {
   date: string;
@@ -122,14 +123,29 @@ export default function ReminderForm({
             Add
           </button>
         </div>
+        {dayReminders.length > 0 && <hr className="border-surface-divider" />}
         {dayReminders.map((r) => (
-          <div
-            key={r.id}
-            className="flex items-center gap-2 text-sm text-content-soft"
-          >
-            <span onClick={() => handleRemoveReminder(r.id)}>x</span>
-            {r.time && <span className="text-content-muted">{r.time}</span>}
-            <span>{r.reminder}</span>
+          <div key={r.id} className="flex flex-row gap-2 py-1">
+            <span
+              onClick={() => handleRemoveReminder(r.id)}
+              className="cursor-pointer text-xs text-content-faint transition-colors hover:text-red-400"
+            >
+              ✕
+            </span>
+
+            <div
+              className={`${r.reminder.length > 20 && "flex flex-col items-start"} gap-1 p-1 text-sm text-content-soft ${r.color ? reminderColors[r.color] : "bg-forest-500"}`}
+            >
+              {r.time && r.duration && (
+                <span className="text-black">
+                  {r.time} - {getEndTime(r.time, Number(r.duration))}
+                </span>
+              )}
+              {r.time && !r.duration && (
+                <span className="text-black">{r.time}</span>
+              )}
+              <span className="text-black"> {r.reminder}</span>
+            </div>
           </div>
         ))}
       </div>
