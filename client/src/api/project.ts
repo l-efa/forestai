@@ -39,6 +39,28 @@ export type Message = {
   };
 };
 
+export interface Tasks {
+  id: string;
+  name: string;
+  order: number;
+  projectId: string;
+  cards?: Cards[];
+}
+
+interface Cards {
+  id: string;
+  title: string;
+  description?: string;
+  order: number;
+  tableId: string;
+  createdAt: Date;
+}
+
+interface OrderedTables {
+  id: string;
+  order: number;
+}
+
 const projectApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProjects: builder.query<Projects[], string>({
@@ -132,6 +154,62 @@ const projectApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["ChatHistory"],
     }),
+
+    getTasks: builder.query<Tasks[], { orgId: string; projectId: string }>({
+      query: ({ orgId, projectId }) => ({
+        url: `/organization/${orgId}/project/${projectId}/tasks`,
+        method: "GET",
+      }),
+      providesTags: ["Tasks"],
+    }),
+
+    addTaskTable: builder.mutation<
+      void,
+      { orgId: string; projectId: string; name: string }
+    >({
+      query: ({ orgId, projectId, name }) => ({
+        url: `/organization/${orgId}/project/${projectId}/tasks`,
+        method: "POST",
+        body: { name },
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
+
+    editTaskTable: builder.mutation<
+      void,
+      { orgId: string; projectId: string; name: string; tableId: string }
+    >({
+      query: ({ orgId, projectId, name, tableId }) => ({
+        url: `/organization/${orgId}/project/${projectId}/tasks`,
+        method: "PATCH",
+        body: { tableId, name },
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
+
+    orderTaskTable: builder.mutation<
+      void,
+      { orgId: string; projectId: string; tables: OrderedTables[] }
+    >({
+      query: ({ orgId, projectId, tables }) => ({
+        url: `/organization/${orgId}/project/${projectId}/tasks/order`,
+        method: "PATCH",
+        body: { tables },
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
+
+    deleteTaskTable: builder.mutation<
+      void,
+      { orgId: string; projectId: string; tableId: string }
+    >({
+      query: ({ orgId, projectId, tableId }) => ({
+        url: `/organization/${orgId}/project/${projectId}/tasks`,
+        method: "DELETE",
+        body: { tableId },
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
   }),
 });
 
@@ -145,4 +223,9 @@ export const {
   useRemoveProjectMemberMutation,
   useGetProjectUserQuery,
   useGetChatHistoryQuery,
+  useGetTasksQuery,
+  useAddTaskTableMutation,
+  useEditTaskTableMutation,
+  useOrderTaskTableMutation,
+  useDeleteTaskTableMutation,
 } = projectApi;

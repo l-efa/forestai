@@ -128,4 +128,35 @@ organizationRouter.get(
   authMiddleware,
   projectController.getChatHistory,
 );
+
+organizationRouter.get(
+  "/:orgId/project/:projectId/tasks",
+  authMiddleware,
+  projectController.getTasks,
+);
+
+organizationRouter.post(
+  "/:orgId/project/:projectId/tasks",
+  authMiddleware,
+  projectController.addTable,
+);
+
+organizationRouter.patch(
+  "/:orgId/project/:projectId/tasks",
+  authMiddleware,
+  projectController.editTable,
+);
+
+organizationRouter.patch(
+  "/:orgId/project/:projectId/tasks/order",
+  authMiddleware,
+  projectController.orderTables,
+);
+
+organizationRouter.delete(
+  "/:orgId/project/:projectId/tasks",
+  authMiddleware,
+  projectController.deleteTable,
+);
+
 export default organizationRouter;

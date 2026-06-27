@@ -307,6 +307,129 @@ const getChatHistory = async (request: Request, response: Response) => {
   }
 };
 
+const getTasks = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.id as string;
+
+  try {
+    const user = await prisma.projectMember.findFirst({
+      where: { userId: userId, projectId: projectId },
+    });
+
+    if (!user) {
+      return response.status(400).json({ message: "Unauthorized" });
+    }
+
+    const tasks = await prisma.taskTable.findMany({
+      where: {
+        projectId: projectId,
+      },
+      include: { cards: { orderBy: { order: "asc" } } },
+      orderBy: { order: "asc" },
+    });
+
+    return response.status(200).json(tasks);
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const addTable = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+  const { name } = request.body;
+
+  try {
+    const tables = await prisma.taskTable.findMany({
+      where: { projectId: projectId },
+    });
+
+    const maxOrder =
+      tables.length > 0 ? Math.max(...tables.map((t) => t.order)) : 0;
+
+    await prisma.taskTable.create({
+      data: {
+        name,
+        order: maxOrder + 1,
+        projectId,
+      },
+    });
+
+    return response.status(200).json({ message: "Table added" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const editTable = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+  const { tableId, name } = request.body;
+
+  try {
+    const user = await prisma.projectMember.findFirst({
+      where: { userId: userId, projectId: projectId },
+    });
+
+    if (!user) {
+      return response.status(400).json({ message: "Unauthorized" });
+    }
+
+    await prisma.taskTable.update({
+      where: { id: tableId, projectId },
+      data: { name },
+    });
+
+    return response.status(200).json({ message: "Table updated" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const orderTables = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const { tables } = request.body;
+
+  console.log("new table order", tables);
+
+  try {
+    await prisma.$transaction(
+      tables.map((table: { id: string; order: number }) =>
+        prisma.taskTable.update({
+          where: { id: table.id },
+          data: { order: table.order },
+        }),
+      ),
+    );
+
+    return response.status(200).json({ message: "Tables reordered" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const deleteTable = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+  const { tableId } = request.body;
+
+  try {
+    const user = await prisma.projectMember.findFirst({
+      where: { userId: userId, projectId: projectId },
+    });
+
+    if (!user) {
+      return response.status(400).json({ message: "Unauthorized" });
+    }
+
+    await prisma.taskTable.delete({ where: { id: tableId } });
+
+    return response.status(200).json({ message: "Table deleted" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   getProjects,
   addProject,
@@ -318,4 +441,9 @@ export default {
   getProjectUser,
   addChatMessage,
   getChatHistory,
+  getTasks,
+  addTable,
+  editTable,
+  orderTables,
+  deleteTable,
 };

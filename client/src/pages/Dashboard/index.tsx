@@ -16,6 +16,7 @@ import {
   Folder,
   UsersRound,
   MessageCircle,
+  Kanban,
 } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
 import { avatarColors } from "@/utils/avatarColors";
@@ -51,6 +52,11 @@ const getProjectLinks = (orgId: string, projectId: string) => [
     name: "Files",
     url: `/organization/${orgId}/project/${projectId}/files`,
     icon: Folder,
+  },
+  {
+    name: "Tasks",
+    url: `/organization/${orgId}/project/${projectId}/tasks`,
+    icon: Kanban,
   },
   {
     name: "Chat",
@@ -91,7 +97,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
         setOpenUserMenu(false);
       }
     };
@@ -168,7 +177,7 @@ export default function Dashboard() {
           </button>
         </div>
       </aside>
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <Outlet />
       </div>
     </div>
