@@ -51,6 +51,7 @@ interface Cards {
   id: string;
   title: string;
   description?: string;
+  dueDate?: string;
   order: number;
   tableId: string;
   createdAt: Date;
@@ -59,6 +60,15 @@ interface Cards {
 interface OrderedTables {
   id: string;
   order: number;
+}
+
+interface NewTask {
+  orgId: string;
+  projectId: string;
+  taskName: string;
+  description?: string;
+  dueDate?: string;
+  tableId: string;
 }
 
 const projectApi = apiSlice.injectEndpoints({
@@ -210,6 +220,22 @@ const projectApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Tasks"],
     }),
+
+    addTaskCard: builder.mutation<void, NewTask>({
+      query: ({
+        orgId,
+        projectId,
+        taskName,
+        description,
+        dueDate,
+        tableId,
+      }) => ({
+        url: `/organization/${orgId}/project/${projectId}/tasks/card`,
+        method: "POST",
+        body: { taskName, description, dueDate, tableId },
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
   }),
 });
 
@@ -228,4 +254,5 @@ export const {
   useEditTaskTableMutation,
   useOrderTaskTableMutation,
   useDeleteTaskTableMutation,
+  useAddTaskCardMutation,
 } = projectApi;

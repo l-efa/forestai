@@ -390,8 +390,6 @@ const orderTables = async (request: Request, response: Response) => {
   const userId = request.user?.id as string;
   const { tables } = request.body;
 
-  console.log("new table order", tables);
-
   try {
     await prisma.$transaction(
       tables.map((table: { id: string; order: number }) =>
@@ -430,6 +428,34 @@ const deleteTable = async (request: Request, response: Response) => {
   }
 };
 
+const addTask = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const { tableId, taskName, description, dueDate } = request.body;
+
+  try {
+    const tasks = await prisma.taskCard.findMany({
+      where: { tableId },
+    });
+
+    const maxOrder =
+      tasks.length > 0 ? Math.max(...tasks.map((t) => t.order)) : 0;
+
+    await prisma.taskCard.create({
+      data: {
+        title: taskName,
+        description,
+        dueDate,
+        tableId,
+        order: maxOrder + 1,
+      },
+    });
+
+    return response.status(200).json({ message: "Task created" });
+  } catch (error) {
+    return response.status(500).json({ message: String(error) });
+  }
+};
+
 export default {
   getProjects,
   addProject,
@@ -446,4 +472,5 @@ export default {
   editTable,
   orderTables,
   deleteTable,
+  addTask,
 };

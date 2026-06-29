@@ -131,6 +131,7 @@ model TaskCard {
   id          String      @id @default(uuid())
   title       String
   description String?
+  dueDate     String?
   order       Int
   tableId     String
   table       TaskTable @relation(fields:[tableId], references: [id])

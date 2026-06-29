@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "TaskCard" ALTER COLUMN "dueDate" SET DATA TYPE TEXT;

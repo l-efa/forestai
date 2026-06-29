@@ -159,4 +159,10 @@ organizationRouter.delete(
   projectController.deleteTable,
 );
 
+organizationRouter.post(
+  "/:orgId/project/:projectId/tasks/card",
+  authMiddleware,
+  projectController.addTask,
+);
+
 export default organizationRouter;
