@@ -456,6 +456,54 @@ const addTask = async (request: Request, response: Response) => {
   }
 };
 
+const orderTasks = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+  const { type, targetTableId, tasks, sourceTasks, targetTasks } = request.body;
+
+  console.log(tasks, sourceTasks, targetTasks);
+
+  try {
+    if (type === "in table") {
+      await prisma.$transaction(
+        tasks.map((task: { id: string; order: number }) =>
+          prisma.taskCard.update({
+            where: {
+              id: task.id,
+            },
+            data: { order: task.order },
+          }),
+        ),
+      );
+
+      console.log("in table");
+    }
+
+    if (type === "out table") {
+      await prisma.$transaction([
+        ...sourceTasks.map((t: { id: string; order: number }) =>
+          prisma.taskCard.update({
+            where: { id: t.id },
+            data: { order: t.order },
+          }),
+        ),
+        ...targetTasks.map((t: { id: string; order: number }) =>
+          prisma.taskCard.update({
+            where: { id: t.id },
+            data: { order: t.order, tableId: targetTableId },
+          }),
+        ),
+      ]);
+
+      console.log("out table");
+    }
+
+    return response.status(200).json({ message: "Tasks reordered" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   getProjects,
   addProject,
@@ -473,4 +521,5 @@ export default {
   orderTables,
   deleteTable,
   addTask,
+  orderTasks,
 };

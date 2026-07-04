@@ -47,7 +47,7 @@ export interface Tasks {
   cards?: Cards[];
 }
 
-interface Cards {
+export interface Cards {
   id: string;
   title: string;
   description?: string;
@@ -71,7 +71,12 @@ interface NewTask {
   tableId: string;
 }
 
-const projectApi = apiSlice.injectEndpoints({
+interface OrderedTasks {
+  id: string;
+  order: number;
+}
+
+export const projectApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProjects: builder.query<Projects[], string>({
       query: (orgId) => ({
@@ -230,9 +235,37 @@ const projectApi = apiSlice.injectEndpoints({
         dueDate,
         tableId,
       }) => ({
-        url: `/organization/${orgId}/project/${projectId}/tasks/card`,
+        url: `/organization/${orgId}/project/${projectId}/tasks/cards`,
         method: "POST",
         body: { taskName, description, dueDate, tableId },
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
+
+    orderTaskCards: builder.mutation<
+      void,
+      {
+        orgId: string;
+        projectId: string;
+        type: string;
+        targetTableId?: string;
+        tasks?: OrderedTasks[];
+        sourceTasks?: OrderedTasks[];
+        targetTasks?: OrderedTasks[];
+      }
+    >({
+      query: ({
+        orgId,
+        projectId,
+        type,
+        targetTableId,
+        tasks,
+        sourceTasks,
+        targetTasks,
+      }) => ({
+        url: `/organization/${orgId}/project/${projectId}/tasks/cards/order`,
+        method: "PATCH",
+        body: { type, targetTableId, tasks, sourceTasks, targetTasks },
       }),
       invalidatesTags: ["Tasks"],
     }),
@@ -255,4 +288,5 @@ export const {
   useOrderTaskTableMutation,
   useDeleteTaskTableMutation,
   useAddTaskCardMutation,
+  useOrderTaskCardsMutation,
 } = projectApi;

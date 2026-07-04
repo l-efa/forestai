@@ -160,9 +160,15 @@ organizationRouter.delete(
 );
 
 organizationRouter.post(
-  "/:orgId/project/:projectId/tasks/card",
+  "/:orgId/project/:projectId/tasks/cards",
   authMiddleware,
   projectController.addTask,
+);
+
+organizationRouter.patch(
+  "/:orgId/project/:projectId/tasks/cards/order",
+  authMiddleware,
+  projectController.orderTasks,
 );
 
 export default organizationRouter;
