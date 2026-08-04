@@ -57,8 +57,8 @@ export default function Task() {
 
     if (!target) return;
 
-    // drag task over empty table droppable
-    if (source.type === "Task" && !target.type && target.data?.tableId) {
+    // drag task over table droppable (cross-table or empty table)
+    if (source.type?.startsWith("task-") && !target.type && target.data?.tableId) {
       overInfoRef.current = { id: "", tableId: target.data.tableId };
       return;
     }
@@ -69,7 +69,7 @@ export default function Task() {
       overInfoRef.current = { id: target.id, tableId: "" };
     }
 
-    if (target.type === "Task" && source.id !== target.id) {
+    if (target.type?.startsWith("task-") && source.id !== target.id) {
       overInfoRef.current = { id: target.id, tableId: target.data.tableId };
     }
   };
@@ -99,7 +99,7 @@ export default function Task() {
         projectId: project.projectData.id,
         tables: newOrder.map((t, i) => ({ id: t.id, order: i + 1 })),
       });
-    } else if (source.type === "Task") {
+    } else if (source.type?.startsWith("task-")) {
       // if task is moved to another table
       if (overInfo.tableId && source.data.tableId !== overInfo.tableId) {
         const sourceTable = tasks!.find((t) => t.id === source.data.tableId)!;
@@ -185,7 +185,7 @@ export default function Task() {
         </ul>
         <DragOverlay>
           {(source) => {
-            if (source.type === "Task") {
+            if (typeof source.type === "string" && source.type.startsWith("task-")) {
               const card = tasks
                 ?.flatMap((t) => t.cards ?? [])
                 .find((c) => c.id === source.id);

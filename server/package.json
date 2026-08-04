@@ -28,7 +28,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "prettier": "^3.8.2",
-    "prisma": "^7.7.0",
+    "prisma": "^7.9.1",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
   }

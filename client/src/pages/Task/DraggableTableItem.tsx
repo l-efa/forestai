@@ -1,5 +1,4 @@
 import type { Tasks } from "@/api/project";
-import { OptimisticSortingPlugin } from "@dnd-kit/dom/sortable";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useState } from "react";
 import { createPortal } from "react-dom";
@@ -20,13 +19,11 @@ export default function TableItem({
     index,
     type: "Table",
     accept: ["Table"],
-    plugins: (defaults) => defaults.filter((p) => p !== OptimisticSortingPlugin),
   });
 
   const { ref: dropRef } = useDroppable({
     id: `drop-${table.id}`,
     data: { tableId: table.id },
-    accept: ["Task"],
   });
   const [showEditForm, setShowEditForm] = useState(false);
   const [editTableName, setEditTableName] = useState(table.name);
@@ -65,7 +62,7 @@ export default function TableItem({
             </span>
           </span>
         </div>
-        <div className="flex flex-col gap-3">
+        <div ref={dropRef} className="flex min-h-[40px] flex-col gap-3">
           {table.cards && (
             <ul>
               {table.cards.map((card, index) => (
@@ -77,10 +74,7 @@ export default function TableItem({
                 />
               ))}
               {table.cards.length <= 0 && (
-                <div
-                  ref={dropRef}
-                  className="rounded border border-dashed border-surface-divider p-3 text-center text-xs text-content-faint"
-                >
+                <div className="rounded border border-dashed border-surface-divider p-3 text-center text-xs text-content-faint">
                   drag here
                 </div>
               )}

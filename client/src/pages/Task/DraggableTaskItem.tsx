@@ -1,6 +1,5 @@
 import type { Cards } from "@/api/project";
 import { formatDueDate } from "@/utils/format";
-import { OptimisticSortingPlugin } from "@dnd-kit/dom/sortable";
 import { useSortable } from "@dnd-kit/react/sortable";
 
 interface TaskItemProps {
@@ -13,10 +12,9 @@ export default function TaskItem({ task, index, tableId }: TaskItemProps) {
   const { ref, isDragSource } = useSortable({
     id: task.id,
     index,
-    type: "Task",
+    type: `task-${tableId}`,
     data: { tableId },
-    accept: ["Task"],
-    plugins: (defaults) => defaults.filter((p) => p !== OptimisticSortingPlugin),
+    accept: [`task-${tableId}`],
   });
 
   return (
