@@ -12,7 +12,16 @@ import NewTableForm from "./NewTableForm";
 import TableItem from "./DraggableTableItem";
 import { arrayMove } from "@dnd-kit/helpers";
 import { DragDropProvider, DragOverlay } from "@dnd-kit/react";
+import { PointerSensor, PointerActivationConstraints } from "@dnd-kit/dom";
 import { formatDueDate } from "@/utils/format";
+
+const sensors = [
+  PointerSensor.configure({
+    activationConstraints: [
+      new PointerActivationConstraints.Distance({ value: 8 }),
+    ],
+  }),
+];
 
 export default function Task() {
   const project = useProjectContext();
@@ -163,6 +172,7 @@ export default function Task() {
         <Button2 name="add table" changeHandler={handleAddTable} />
       </header>
       <DragDropProvider
+        sensors={sensors}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}

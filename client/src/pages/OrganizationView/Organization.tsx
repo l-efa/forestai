@@ -1,7 +1,4 @@
-import {
-  useDeleteOrganizationMutation,
-  useGetOrganizationQuery,
-} from "@/api/organization";
+import { useDeleteOrganizationMutation } from "@/api/organization";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "@/utils/format";
 import Button2 from "@/components/Button2";

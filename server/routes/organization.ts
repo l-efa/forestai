@@ -171,4 +171,10 @@ organizationRouter.patch(
   projectController.orderTasks,
 );
 
+organizationRouter.patch(
+  "/:orgId/project/:projectId/tasks/cards/update",
+  authMiddleware,
+  projectController.updateTask,
+);
+
 export default organizationRouter;

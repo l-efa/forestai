@@ -2,6 +2,7 @@ import type { Tasks } from "@/api/project";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { GripVertical } from "lucide-react";
 import EditTableForm from "./EditTableForm";
 import NewTaskForm from "./TaskForm/NewTaskForm";
 import TaskItem from "./DraggableTaskItem";
@@ -38,14 +39,14 @@ export default function TableItem({
     <li ref={ref} style={{ visibility: isDragSource ? "hidden" : undefined }}>
       <div className="flex w-64 flex-shrink-0 flex-col gap-2 bg-black p-3">
         <div className="flex cursor-pointer items-center text-sm font-semibold capitalize text-content-soft">
-          <div className="flex-1 p-2 hover:bg-surface-card">
-            <p
-              ref={handleRef}
-              className="text-s cursor-grab"
-              onClick={() => setShowEditForm(true)}
-            >
-              {table.name}
-            </p>
+          <span ref={handleRef} className="cursor-grab p-2 text-content-faint">
+            <GripVertical size={16} />
+          </span>
+          <div
+            className="flex-1 p-2 hover:bg-surface-card"
+            onClick={() => setShowEditForm(true)}
+          >
+            <p className="text-s">{table.name}</p>
           </div>
           <span className="ml-auto flex items-center gap-1">
             <button
@@ -62,9 +63,9 @@ export default function TableItem({
             </span>
           </span>
         </div>
-        <div ref={dropRef} className="flex min-h-[40px] flex-col gap-3">
+        <div ref={dropRef} className="flex min-h-[60px] flex-col gap-3">
           {table.cards && (
-            <ul>
+            <ul className="flex flex-col gap-2">
               {table.cards.map((card, index) => (
                 <TaskItem
                   task={card}

@@ -504,6 +504,29 @@ const orderTasks = async (request: Request, response: Response) => {
   }
 };
 
+const updateTask = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+  const { taskName, taskDescription, taskId } = request.body;
+
+  try {
+    const user = await prisma.projectMember.findFirst({
+      where: { userId: userId, projectId: projectId },
+    });
+
+    if (!user) return response.status(301).json({ message: "Unauthorized" });
+
+    await prisma.taskCard.update({
+      where: { id: taskId },
+      data: { title: taskName, description: taskDescription },
+    });
+
+    return response.status(200).json({ message: "Task edited" });
+  } catch (error) {
+    return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   getProjects,
   addProject,
@@ -522,4 +545,5 @@ export default {
   deleteTable,
   addTask,
   orderTasks,
+  updateTask,
 };
