@@ -1,8 +1,13 @@
-import { useEditTaskItemMutation } from "@/api/project";
+import {
+  useDeleteTaskItemMutation,
+  useEditTaskItemMutation,
+} from "@/api/project";
 import Button2 from "@/components/Button2";
+import Confirm from "@/components/Confirm";
 import InputField from "@/components/InputField";
 import { useOrgContext } from "@/context/OrgContext";
 import { useProjectContext } from "@/context/ProjectContext";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface EditTaskFormProps {
@@ -26,6 +31,9 @@ export const EditTaskForm = function ({
   const org = useOrgContext();
 
   const [editTask] = useEditTaskItemMutation();
+  const [deleteTask] = useDeleteTaskItemMutation();
+
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleEditTask = async () => {
     editTask({
@@ -37,6 +45,20 @@ export const EditTaskForm = function ({
     });
   };
 
+  const toggleConfirm = () => {
+    setShowConfirm((prev) => !prev);
+  };
+
+  const removeTask = async () => {
+    await deleteTask({
+      orgId: org.org.id,
+      projectId: project.projectData.id,
+      taskId: taskId,
+    });
+    toggleConfirm();
+    toggleForm();
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
@@ -44,10 +66,18 @@ export const EditTaskForm = function ({
       onPointerDown={(e) => e.nativeEvent.stopImmediatePropagation()}
     >
       <div
-        className="w-80 bg-surface-card"
+        className="w-80 bg-surface-card p-2 text-white"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-white">Edit Task</p>
+        <div className="flex items-center justify-between">
+          <p>edit task</p>
+          <button
+            className="text-content-faint hover:text-red-400"
+            onClick={toggleConfirm}
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
         <InputField
           name=""
           value={taskName}
@@ -58,11 +88,21 @@ export const EditTaskForm = function ({
           placeholder="description..."
           value={taskDescription}
           onChange={(e) => editTaskDescription(e.target.value)}
-          className="text-content w-full resize-none rounded border border-surface-divider bg-surface-card p-2 text-sm text-white outline-none"
+          className="text-content w-full resize-none rounded border border-surface-divider bg-surface-card p-2 text-sm outline-none"
           rows={3}
         />
         <Button2 name="Update" changeHandler={handleEditTask} />
       </div>
+
+      {showConfirm && (
+        <Confirm
+          info="Are you sure you want to delete this task?"
+          confirmButton="Delete"
+          cancelButton="Cancel"
+          onConfirm={removeTask}
+          onCancel={toggleConfirm}
+        />
+      )}
     </div>
   );
 };

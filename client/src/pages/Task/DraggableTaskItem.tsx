@@ -31,18 +31,16 @@ export default function TaskItem({ task, index, tableId }: TaskItemProps) {
   };
 
   return (
-    <div>
-      <li
-        ref={ref}
-        style={{ visibility: isDragSource ? "hidden" : undefined }}
-        onClick={toggleEditForm}
-      >
-        <div className="flex flex-col gap-2 rounded bg-surface-card p-3">
-          <p className="text-[13px] text-forest-400">{task.title}</p>
-          <p className="text-[11px]">{task.description}</p>
-          <p>{task.dueDate && formatDueDate(task.dueDate)}</p>
-        </div>
-      </li>
+    <li
+      ref={ref}
+      style={{ visibility: isDragSource ? "hidden" : undefined }}
+      onClick={toggleEditForm}
+    >
+      <div className="flex flex-col gap-2 rounded bg-surface-card p-3">
+        <p className="text-[13px] text-forest-400">{task.title}</p>
+        <p className="text-[11px]">{task.description}</p>
+        <p>{task.dueDate && formatDueDate(task.dueDate)}</p>
+      </div>
       {showEditTaskMenu &&
         createPortal(
           <EditTaskForm
@@ -55,6 +53,6 @@ export default function TaskItem({ task, index, tableId }: TaskItemProps) {
           />,
           document.body,
         )}
-    </div>
+    </li>
   );
 }

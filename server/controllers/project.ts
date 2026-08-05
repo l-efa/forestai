@@ -417,7 +417,7 @@ const deleteTable = async (request: Request, response: Response) => {
     });
 
     if (!user) {
-      return response.status(400).json({ message: "Unauthorized" });
+      return response.status(403).json({ message: "Forbidden" });
     }
 
     await prisma.taskTable.delete({ where: { id: tableId } });
@@ -514,7 +514,7 @@ const updateTask = async (request: Request, response: Response) => {
       where: { userId: userId, projectId: projectId },
     });
 
-    if (!user) return response.status(301).json({ message: "Unauthorized" });
+    if (!user) return response.status(403).json({ message: "Forbidden" });
 
     await prisma.taskCard.update({
       where: { id: taskId },
@@ -524,6 +524,29 @@ const updateTask = async (request: Request, response: Response) => {
     return response.status(200).json({ message: "Task edited" });
   } catch (error) {
     return response.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const deleteTask = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const projectId = request.params.projectId as string;
+
+  const { taskId } = request.body;
+
+  try {
+    const user = await prisma.projectMember.findFirst({
+      where: { userId: userId },
+    });
+
+    if (!user) return response.status(403).json({ message: "Forbidden" });
+
+    await prisma.taskCard.delete({ where: { id: taskId } });
+
+    return response.status(200).json({ message: "Task deleted" });
+  } catch (error) {
+    return response
+      .status(500)
+      .json({ message: "Something went wrong while deleting task!" });
   }
 };
 
@@ -546,4 +569,5 @@ export default {
   addTask,
   orderTasks,
   updateTask,
+  deleteTask,
 };

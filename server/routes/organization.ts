@@ -177,4 +177,10 @@ organizationRouter.patch(
   projectController.updateTask,
 );
 
+organizationRouter.delete(
+  "/:orgId/project/:projectId/tasks/cards/delete",
+  authMiddleware,
+  projectController.deleteTask,
+);
+
 export default organizationRouter;

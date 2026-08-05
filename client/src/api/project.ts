@@ -287,6 +287,18 @@ export const projectApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Tasks"],
     }),
+
+    deleteTaskItem: builder.mutation<
+      void,
+      { orgId: string; projectId: string; taskId: string }
+    >({
+      query: ({ orgId, projectId, taskId }) => ({
+        url: `/organization/${orgId}/project/${projectId}/tasks/cards/delete`,
+        method: "DELETE",
+        body: { taskId },
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
   }),
 });
 
@@ -308,4 +320,5 @@ export const {
   useAddTaskCardMutation,
   useOrderTaskCardsMutation,
   useEditTaskItemMutation,
+  useDeleteTaskItemMutation,
 } = projectApi;

@@ -19,7 +19,10 @@ export default function Confirm({
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/60" onClick={onCancel} />
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="w-full max-w-sm rounded-xl border border-surface-border bg-surface-card p-6 shadow-cardDrop">
           <p className="mb-4 text-sm text-content-secondary">{info}</p>
           <div className="flex justify-end gap-2">
