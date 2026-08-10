@@ -309,7 +309,11 @@ const getChatHistory = async (request: Request, response: Response) => {
 
 const getTasks = async (request: Request, response: Response) => {
   const userId = request.user?.id as string;
-  const projectId = request.params.id as string;
+  const projectId = request.params.projectId as string;
+
+  if (!projectId) {
+    return response.status(400).json({ message: "Missing parameters" });
+  }
 
   try {
     const user = await prisma.projectMember.findFirst({

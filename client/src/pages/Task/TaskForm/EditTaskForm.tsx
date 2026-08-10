@@ -36,13 +36,14 @@ export const EditTaskForm = function ({
   const [showConfirm, setShowConfirm] = useState(false);
 
   const handleEditTask = async () => {
-    editTask({
+    await editTask({
       orgId: org.org.id,
       projectId: project.projectData.id,
       taskName: taskName,
       taskDescription: taskDescription,
       taskId: taskId,
     });
+    toggleForm();
   };
 
   const toggleConfirm = () => {
@@ -62,7 +63,10 @@ export const EditTaskForm = function ({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-      onClick={toggleForm}
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleForm();
+      }}
       onPointerDown={(e) => e.nativeEvent.stopImmediatePropagation()}
     >
       <div

@@ -38,7 +38,7 @@ export default function TaskItem({ task, index, tableId }: TaskItemProps) {
     >
       <div className="flex flex-col gap-2 rounded bg-surface-card p-3">
         <p className="text-[13px] text-forest-400">{task.title}</p>
-        <p className="text-[11px]">{task.description}</p>
+        <p className="whitespace-pre-wrap text-[11px]">{task.description}</p>
         <p>{task.dueDate && formatDueDate(task.dueDate)}</p>
       </div>
       {showEditTaskMenu &&

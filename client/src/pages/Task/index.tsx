@@ -203,7 +203,7 @@ export default function Task() {
               return (
                 <div className="flex flex-col gap-2 rounded bg-surface-card p-3 opacity-90 shadow-lg">
                   <p className="text-[13px] text-forest-400">{card.title}</p>
-                  <p className="text-[11px]">{card.description}</p>
+                  <p className="whitespace-pre-wrap text-[11px]">{card.description}</p>
                   <p>{card.dueDate && formatDueDate(card.dueDate)}</p>
                 </div>
               );
