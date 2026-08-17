@@ -374,6 +374,47 @@ const deleteUserFromOrg = async (request: Request, response: Response) => {
   }
 };
 
+const updateOrgUser = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const orgId = request.params.orgId as string;
+  const { orgUser, newRole } = request.body;
+
+  if (!userId || !orgUser)
+    return response.status(400).json({ message: "Invalid parameters" });
+
+  try {
+    const user = await prisma.organizationMember.findFirst({
+      where: { userId: userId, organizationId: orgId },
+    });
+
+    const isUserOwner = await prisma.organization.findFirst({
+      where: { ownerId: userId, id: orgId },
+    });
+
+    console.log(user?.role);
+    console.log("");
+
+    if (!user) return response.status(403).json({ message: "Forbidden" });
+
+    if (user.role !== "admin" && !isUserOwner) {
+      return response.status(403).json({ message: "Forbidden" });
+    }
+
+    await prisma.organizationMember.update({
+      where: {
+        userId_organizationId: { userId: orgUser, organizationId: orgId },
+      },
+      data: { role: newRole },
+    });
+
+    return response.status(200).json({ message: "Org user role updated" });
+  } catch (error) {
+    return response
+      .status(500)
+      .json({ message: "Something went wrong while updating org user" });
+  }
+};
+
 const acceptInvitation = async (request: Request, response: Response) => {
   const userId = request.user?.id as string;
   const invitationId = request.params.invitationId as string;
@@ -455,4 +496,5 @@ export default {
   acceptInvitation,
   declineInvitation,
   getOrgUser,
+  updateOrgUser,
 };

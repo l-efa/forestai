@@ -17,7 +17,7 @@ import Calendar from "./pages/Calendar";
 // ORGANIZATION
 import Organization from "./pages/OrganizationView/Organization";
 import Projects from "./pages/OrganizationView/Projects";
-import Members from "./pages/OrganizationView/Members";
+import Members from "./pages/OrganizationView/Members/Members";
 
 // PROJECT
 import Project from "./pages/ProjectView";

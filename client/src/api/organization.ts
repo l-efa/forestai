@@ -80,6 +80,22 @@ const organizationApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Organization"],
     }),
 
+    editOrgMember: builder.mutation<
+      void,
+      {
+        orgUser: string;
+        orgId: string;
+        newRole: string;
+      }
+    >({
+      query: ({ orgUser, orgId, newRole }) => ({
+        url: `/organization/${orgId}/members`,
+        method: "PATCH",
+        body: { orgUser, newRole },
+      }),
+      invalidatesTags: ["Organization"],
+    }),
+
     acceptInvitation: builder.mutation<{ message: string }, string>({
       query: (invitationId) => ({
         url: `/organization/invitations/${invitationId}/accept`,
@@ -108,4 +124,5 @@ export const {
   useDeclineInvitationMutation,
   useGetOrganizationsQuery,
   useGetOrganizationUserQuery,
+  useEditOrgMemberMutation,
 } = organizationApi;

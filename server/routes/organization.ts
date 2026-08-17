@@ -59,6 +59,12 @@ organizationRouter.delete(
   organizationController.deleteUserFromOrg,
 );
 
+organizationRouter.patch(
+  "/:orgId/members/",
+  authMiddleware,
+  organizationController.updateOrgUser,
+);
+
 // Invitations
 
 organizationRouter.post(

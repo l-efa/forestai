@@ -1,7 +1,4 @@
-import {
-  useGetOrganizationMembersQuery,
-  useRemoveMemberMutation,
-} from "@/api/organization";
+import { useGetOrganizationMembersQuery } from "@/api/organization";
 import { useParams } from "react-router-dom";
 import { formatDate } from "@/utils/format";
 import { avatarColors } from "@/utils/avatarColors";
@@ -10,7 +7,7 @@ import { useEffect, useState } from "react";
 import InputField from "@/components/InputField";
 import { useFindUsersQuery, useInviteUserToOrgMutation } from "@/api/user";
 import { useOrgContext } from "@/context/OrgContext";
-import Confirm from "@/components/Confirm";
+import EditMember from "./EditMember";
 
 export default function Members() {
   const { orgId } = useParams();
@@ -19,14 +16,16 @@ export default function Members() {
   const [lookUpValue, setLookUpValue] = useState("");
   const [debouncedValue, setDebouncedValue] = useState("");
   const [invitedUser, setInvitedUser] = useState("");
-  const [removeModal, setRemoveModal] = useState(false);
+  const [editingMember, setEditingMember] = useState<{
+    id: string;
+    name: string;
+    role: string;
+  } | null>(null);
 
   const { data: members } = useGetOrganizationMembersQuery(orgId!);
-  const [inviteUser, { isLoading }] = useInviteUserToOrgMutation();
+  const [inviteUser] = useInviteUserToOrgMutation();
 
-  const { org, orgUser } = useOrgContext();
-
-  console.log(org, orgUser);
+  const { orgUser } = useOrgContext();
 
   const handleInviteMember = () => {
     console.log(invitedUser, " invited");
@@ -47,58 +46,51 @@ export default function Members() {
     skip: debouncedValue.length < 2,
   });
 
-  const [removeUser] = useRemoveMemberMutation();
-
-  const handleRemoveUser = async (userId: string) => {
-    await removeUser({ userId: userId, orgId: orgId! });
-    toggleRemoveModal();
-  };
-
-  const toggleRemoveModal = () => {
-    setRemoveModal((prev) => !prev);
-  };
-
   return (
     <div className="p-3">
-      <p>Members:</p>
+      <h2 className="mb-3 text-lg font-bold">Members</h2>
       {orgUser.role !== "member" && (
         <Button2 name="Invite member" changeHandler={toggleInviteMember} />
       )}
-      {members &&
-        members.map((member) => (
-          <div
-            key={member.userId}
-            className={`flex max-w-md items-center gap-4 rounded-lg p-3 ${avatarColors[member.user.profileColor]}`}
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-lg font-bold">
-              {member.user.username[0]?.toUpperCase()}
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold">{member.user.username}</p>
-              <p className="text-xs opacity-80">{member.user.email}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs font-medium uppercase opacity-90">
-                {member.role}
-              </p>
-              <p className="text-xs opacity-60">
-                {formatDate(member.createdAt)}
-              </p>
-              {orgUser.role !== "member" && (
-                <button onClick={toggleRemoveModal}>remove</button>
+      <div className="mt-3 flex max-w-md flex-col gap-2">
+        {members &&
+          members.map((member) => (
+            <div
+              key={member.userId}
+              className={`flex cursor-pointer items-center gap-4 rounded-lg border border-transparent p-3 transition-colors hover:border-forest-500/50 ${avatarColors[member.user.profileColor]}`}
+              onClick={() =>
+                setEditingMember({
+                  id: member.userId,
+                  name: member.user.username,
+                  role: member.role,
+                })
+              }
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-lg font-bold">
+                {member.user.username[0]?.toUpperCase()}
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold">{member.user.username}</p>
+                <p className="text-xs opacity-80">{member.user.email}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-medium uppercase opacity-90">
+                  {member.role}
+                </p>
+                <p className="text-xs opacity-60">
+                  {formatDate(member.createdAt)}
+                </p>
+              </div>
+              {editingMember && editingMember.id === member.userId && (
+                <EditMember
+                  editingMember={editingMember}
+                  setEditingMember={setEditingMember}
+                  toggleEditForm={() => setEditingMember(null)}
+                />
               )}
             </div>
-            {removeModal && (
-              <Confirm
-                info="Are you sure you want to remove this user from organizaton?"
-                confirmButton="Yes"
-                cancelButton="No"
-                onConfirm={() => handleRemoveUser(member.userId)}
-                onCancel={toggleRemoveModal}
-              />
-            )}
-          </div>
-        ))}
+          ))}
+      </div>
       {showModal && (
         <>
           <div
