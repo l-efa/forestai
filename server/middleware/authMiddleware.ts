@@ -12,7 +12,10 @@ export const authMiddleware = (
   }
 
   try {
-    request.user = jwt.verify(token, process.env.SECRET_KEY!) as { id: string; username: string };
+    request.user = jwt.verify(token, process.env.SECRET_KEY!) as {
+      id: string;
+      username: string;
+    };
     next();
   } catch (error) {
     return response.status(401).json({ message: "Invalid token" });

@@ -46,48 +46,62 @@ export default function Members() {
     skip: debouncedValue.length < 2,
   });
 
+  const groupedMembers = members?.reduce<Record<string, typeof members>>(
+    (acc, member) => {
+      (acc[member.role] ??= []).push(member);
+      return acc;
+    },
+    {},
+  );
+
   return (
     <div className="p-3">
       <h2 className="mb-3 text-lg font-bold">Members</h2>
       {orgUser.role !== "member" && (
         <Button2 name="Invite member" changeHandler={toggleInviteMember} />
       )}
-      <div className="mt-3 flex max-w-md flex-col gap-2">
-        {members &&
-          members.map((member) => (
-            <div
-              key={member.userId}
-              className={`flex cursor-pointer items-center gap-4 rounded-lg border border-transparent p-3 transition-colors hover:border-forest-500/50 ${avatarColors[member.user.profileColor]}`}
-              onClick={() =>
-                setEditingMember({
-                  id: member.userId,
-                  name: member.user.username,
-                  role: member.role,
-                })
-              }
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-lg font-bold">
-                {member.user.username[0]?.toUpperCase()}
+      <div className="mt-3 flex max-w-md flex-col gap-6">
+        {groupedMembers &&
+          Object.entries(groupedMembers).map(([role, roleMembers]) => (
+            <div key={role}>
+              <h3 className="mb-2 text-sm font-semibold uppercase text-content-muted">
+                {role}
+              </h3>
+              <div className="flex flex-col gap-2">
+                {roleMembers.map((member) => (
+                  <div
+                    key={member.userId}
+                    className={`flex cursor-pointer items-center gap-4 rounded-lg border border-transparent p-3 transition-colors hover:border-forest-500/50 ${avatarColors[member.user.profileColor]}`}
+                    onClick={() =>
+                      setEditingMember({
+                        id: member.userId,
+                        name: member.user.username,
+                        role: member.role,
+                      })
+                    }
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-lg font-bold">
+                      {member.user.username[0]?.toUpperCase()}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">{member.user.username}</p>
+                      <p className="text-xs opacity-80">{member.user.email}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs opacity-60">
+                        {formatDate(member.createdAt)}
+                      </p>
+                    </div>
+                    {editingMember && editingMember.id === member.userId && (
+                      <EditMember
+                        editingMember={editingMember}
+                        setEditingMember={setEditingMember}
+                        toggleEditForm={() => setEditingMember(null)}
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
-              <div className="flex-1">
-                <p className="font-semibold">{member.user.username}</p>
-                <p className="text-xs opacity-80">{member.user.email}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs font-medium uppercase opacity-90">
-                  {member.role}
-                </p>
-                <p className="text-xs opacity-60">
-                  {formatDate(member.createdAt)}
-                </p>
-              </div>
-              {editingMember && editingMember.id === member.userId && (
-                <EditMember
-                  editingMember={editingMember}
-                  setEditingMember={setEditingMember}
-                  toggleEditForm={() => setEditingMember(null)}
-                />
-              )}
             </div>
           ))}
       </div>

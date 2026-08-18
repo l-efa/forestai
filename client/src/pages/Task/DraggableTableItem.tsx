@@ -58,7 +58,7 @@ export default function TableItem({
             >
               +
             </button>
-            <span className="bg-surface-card px-1 py-0 text-xs">
+            <span className="inline-flex min-h-[18px] min-w-[18px] items-center justify-center bg-surface-card px-1 py-0 text-xs">
               {table.cards?.length}
             </span>
           </span>

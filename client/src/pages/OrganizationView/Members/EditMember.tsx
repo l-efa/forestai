@@ -6,6 +6,7 @@ import Button2 from "@/components/Button2";
 import Confirm from "@/components/Confirm";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { roles } from "@/utils/roles";
 
 interface editPropsType {
   editingMember: { id: string; name: string; role: string };
@@ -20,12 +21,6 @@ export default function EditMember({
   setEditingMember,
   toggleEditForm,
 }: editPropsType) {
-  const roles = [
-    { role: "Member", info: "Basic rights" },
-    { role: "Project manager", info: "Advanced rights in projects" },
-    { role: "Admin", info: "All rights in organization" },
-  ];
-
   const [removeModal, setRemoveModal] = useState(false);
   const { orgId } = useParams();
   const [removeUser] = useRemoveMemberMutation();

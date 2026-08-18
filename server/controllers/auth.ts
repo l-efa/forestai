@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 
 import { prisma } from "../lib/prisma";
 
+const dummyHash = argon2.hash("dummy-password-for-timing-safety");
+
 const Register = async (request: Request, response: Response) => {
   const { email, username, password } = request.body;
 
@@ -76,6 +78,7 @@ const Login = async (request: Request, response: Response) => {
     });
 
     if (!existingUser) {
+      await argon2.verify(await dummyHash, password);
       return response
         .status(401)
         .json({ message: "Invalid username or password" });
