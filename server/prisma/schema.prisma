@@ -24,6 +24,7 @@ model User {
   messages           Message[]
   settings           UserSettings?
   reminders          CalendarReminder[]
+  refreshTokens      RefreshToken[]
 }
 
 model Organization {
@@ -135,5 +136,15 @@ model TaskCard {
   order       Int
   tableId     String
   table       TaskTable @relation(fields:[tableId], references: [id])
+  createdAt   DateTime    @default(now())
+}
+
+model RefreshToken {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields:[userId], references: [id])
+  token       String      @unique
+  revoked     Boolean     @default(false)
+  expiresAt   DateTime
   createdAt   DateTime    @default(now())
 }
