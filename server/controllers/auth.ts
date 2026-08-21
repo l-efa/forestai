@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 import { prisma } from "../lib/prisma";
 
@@ -93,14 +94,40 @@ const Login = async (request: Request, response: Response) => {
     const token = jwt.sign(
       { id: existingUser.id, username: existingUser.username },
       process.env.SECRET_KEY!,
-      { expiresIn: "1h" },
+      { expiresIn: "15m" },
     );
+
+    if (remember) {
+      const refresh = crypto.randomBytes(32).toString("hex");
+      const refreshTokenMaxAge = 30 * 24 * 60 * 60 * 1000;
+
+      response.cookie("refresh", refresh, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+        maxAge: refreshTokenMaxAge,
+        path: "/api/auth",
+      });
+
+      const refreshHash = crypto
+        .createHash("sha256")
+        .update(refresh)
+        .digest("hex");
+
+      await prisma.refreshToken.create({
+        data: {
+          userId: existingUser.id,
+          token: refreshHash,
+          expiresAt: new Date(Date.now() + refreshTokenMaxAge),
+        },
+      });
+    }
 
     response.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
-      maxAge: 60 * 60 * 1000,
+      maxAge: 15 * 60 * 1000,
     });
 
     return response.status(200).json({ message: "Login successful" });
@@ -134,13 +161,105 @@ const Me = async (request: Request, response: Response) => {
 };
 
 const Logout = async (request: Request, response: Response) => {
+  const refresh = request.cookies?.refresh as string | undefined;
+  const userId = request.user?.id as string;
+
+  if (refresh) {
+    const refreshHash = crypto
+      .createHash("sha256")
+      .update(refresh)
+      .digest("hex");
+
+    try {
+      await prisma.refreshToken.update({
+        where: {
+          token: refreshHash,
+          userId: userId,
+        },
+        data: {
+          revoked: true,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   response.clearCookie("token", {
     httpOnly: true,
     secure: false,
     sameSite: "strict",
   });
 
+  response.clearCookie("refresh", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "strict",
+    path: "/api/auth",
+  });
+
   return response.status(200).json({ message: "Logged out" });
 };
 
-export default { Register, Login, Me, Logout };
+const Refresh = async (request: Request, response: Response) => {
+  const refresh = request.cookies?.refresh as string | undefined;
+
+  if (refresh) {
+    const hashedRefresh = crypto
+      .createHash("sha256")
+      .update(refresh)
+      .digest("hex");
+
+    try {
+      const validRefresh = await prisma.refreshToken.findUnique({
+        where: {
+          token: hashedRefresh,
+          revoked: false,
+        },
+      });
+
+      if (validRefresh) {
+        if (validRefresh.expiresAt < new Date(Date.now())) {
+          await prisma.refreshToken.update({
+            where: { id: validRefresh.id },
+            data: { revoked: true },
+          });
+
+          return response
+            .status(401)
+            .json({ message: "Refresh token expired" });
+        }
+
+        const user = await prisma.user.findFirst({
+          where: {
+            id: validRefresh.userId,
+          },
+        });
+
+        if (user) {
+          const newToken = jwt.sign(
+            { id: user.id, username: user.username },
+            process.env.SECRET_KEY!,
+            { expiresIn: "15m" },
+          );
+
+          response.cookie("token", newToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            maxAge: 15 * 60 * 1000,
+          });
+          return response.status(200).json({ message: "Re-Signed" });
+        }
+      }
+    } catch (error) {
+      return response
+        .status(500)
+        .json({ message: "Something went wrong while refreshing" });
+    }
+  }
+
+  return response.status(401).json({ message: "Unauthorized" });
+};
+
+export default { Register, Login, Me, Logout, Refresh };
