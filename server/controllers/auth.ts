@@ -94,8 +94,15 @@ const Login = async (request: Request, response: Response) => {
     const token = jwt.sign(
       { id: existingUser.id, username: existingUser.username },
       process.env.SECRET_KEY!,
-      { expiresIn: "15m" },
+      { expiresIn: "2m" },
     );
+
+    response.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 2 * 60 * 1000,
+    });
 
     if (remember) {
       const refresh = crypto.randomBytes(32).toString("hex");
@@ -122,13 +129,6 @@ const Login = async (request: Request, response: Response) => {
         },
       });
     }
-
-    response.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
-    });
 
     return response.status(200).json({ message: "Login successful" });
   } catch (error) {
