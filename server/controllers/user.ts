@@ -198,6 +198,43 @@ const removeReminder = async (request: Request, response: Response) => {
   }
 };
 
+const editReminder = async (request: Request, response: Response) => {
+  const userId = request.user?.id as string;
+  const reminderId = request.params.reminderId as string;
+  const { reminder, time, duration, color } = request.body;
+
+  try {
+    const checkReminder = await prisma.calendarReminder.findUnique({
+      where: {
+        id: reminderId,
+        userId: userId,
+      },
+    });
+
+    if (!checkReminder) {
+      return response.status(403).json({ message: "unauthorized" });
+    }
+
+    await prisma.calendarReminder.update({
+      where: {
+        id: reminderId,
+      },
+      data: {
+        reminder: reminder,
+        time: time,
+        duration: duration,
+        color: color,
+      },
+    });
+
+    return response.status(200).json({ message: "Reminder updated" });
+  } catch (error) {
+    return response
+      .status(500)
+      .json({ message: "Somethin went wrong while updating reminder" });
+  }
+};
+
 export default {
   findUsers,
   getUserNotifications,
@@ -207,4 +244,5 @@ export default {
   getUserCalendar,
   newReminder,
   removeReminder,
+  editReminder,
 };

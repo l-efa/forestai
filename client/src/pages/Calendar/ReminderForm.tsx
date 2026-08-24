@@ -2,6 +2,8 @@ import { useRemoveReminderMutation, type userCalendar } from "@/api/user";
 import InputField from "@/components/InputField";
 import { reminderColors } from "@/utils/avatarColors";
 import { getEndTime } from ".";
+import { useState } from "react";
+import EditForm from "./EditForm";
 
 interface ReminderFormProps {
   date: string;
@@ -37,6 +39,12 @@ export default function ReminderForm({
   reminders,
 }: ReminderFormProps) {
   const [removeReminder] = useRemoveReminderMutation();
+
+  const [openEditForm, setOpenEditForm] = useState(false);
+
+  const toggleEditForm = () => {
+    setOpenEditForm((prev) => !prev);
+  };
 
   const handleRemoveReminder = async (reminderId: string) => {
     await removeReminder({ reminderId });
@@ -125,16 +133,20 @@ export default function ReminderForm({
         </div>
         {dayReminders.length > 0 && <hr className="border-surface-divider" />}
         {dayReminders.map((r) => (
-          <div key={r.id} className="flex flex-row gap-2 py-1">
+          <div key={r.id} className="flex flex-row items-center gap-2 py-1">
             <span
-              onClick={() => handleRemoveReminder(r.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemoveReminder(r.id);
+              }}
               className="cursor-pointer text-xs text-content-faint transition-colors hover:text-red-400"
             >
               ✕
             </span>
 
             <div
-              className={`${r.reminder.length > 20 && "flex flex-col items-start"} gap-1 p-1 text-sm text-content-soft ${r.color ? reminderColors[r.color] : "bg-forest-500"}`}
+              className={`${r.reminder.length > 20 && "flex flex-col items-start"} cursor-pointer gap-1 p-1 text-sm text-content-soft ${r.color ? reminderColors[r.color] : "bg-forest-500"}`}
+              onClick={toggleEditForm}
             >
               {r.time && r.duration && (
                 <span className="text-black">
@@ -146,6 +158,16 @@ export default function ReminderForm({
               )}
               <span className="text-black"> {r.reminder}</span>
             </div>
+            {openEditForm && (
+              <EditForm
+                id={r.id}
+                name={r.reminder}
+                time={r.time}
+                duration={r.duration}
+                color={r.color}
+                toggleForm={toggleEditForm}
+              />
+            )}
           </div>
         ))}
       </div>

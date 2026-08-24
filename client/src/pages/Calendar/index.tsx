@@ -156,7 +156,7 @@ export default function Calendar() {
             return (
               <div
                 key={i}
-                className={`aspect-square overflow-hidden p-1 ${dayReminders?.length ? "border-2 border-forest-500" : "border border-surface-border"}`}
+                className={`aspect-square overflow-hidden p-1 ${dayReminders?.length ? "cursor-pointer border-2 border-forest-500" : "border border-surface-border"}`}
                 onClick={() => day.current && handleSelectedDate(day)}
               >
                 <span className={!day.current ? "opacity-30" : ""}>

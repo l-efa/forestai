@@ -28,12 +28,18 @@ userRouter.put(
 
 userRouter.get("/userCalendar", authMiddleware, userController.getUserCalendar);
 
-userRouter.put("/userCalendar", authMiddleware, userController.newReminder);
+userRouter.post("/userCalendar", authMiddleware, userController.newReminder);
 
 userRouter.delete(
   "/userCalendar/:reminderId",
   authMiddleware,
   userController.removeReminder,
+);
+
+userRouter.put(
+  "/userCalendar/:reminderId",
+  authMiddleware,
+  userController.editReminder,
 );
 
 export default userRouter;
