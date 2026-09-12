@@ -113,6 +113,24 @@ export default function Dashboard() {
   };
 
   const { user } = useUserContext();
+
+  const handleUserImageLetters = (name: string) => {
+    const names = name.split(" ");
+    let final = "";
+    console.log(names.length);
+    if (names.length > 1) {
+      final = names[0][0];
+      final = final + names[1][0];
+    } else if (names.length === 1) {
+      final = name[0];
+      final = final + name[1];
+    } else {
+      final = "-";
+    }
+
+    return final.toUpperCase();
+  };
+
   return (
     <div className="flex h-screen">
       <aside className="hidden w-72 flex-col gap-2 border-r border-surface-border lg:flex">
@@ -166,7 +184,7 @@ export default function Dashboard() {
             <div
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-content-primary ${avatarColors[user?.profileColor ?? "green"]}`}
             >
-              {user?.username?.[0]?.toUpperCase() ?? "?"}
+              {handleUserImageLetters(user?.username ?? "")}
             </div>
             <span className="text-sm">{user?.username ?? "?"}</span>
             {notificationCount > 0 && (

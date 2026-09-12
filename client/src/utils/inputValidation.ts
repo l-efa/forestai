@@ -1,14 +1,14 @@
 const reserved = ["admin", "null", "root", "api", "login", "register"];
 
-// checks for length (3-20), characters (a-z, A-Z, 0-9, -,_)
+// checks for length (3-20), characters (a-z, A-Z, 0-9, -,_, space)
 export const isValidUsername = (input: string) => {
   if (input.length < 3 || input.length > 20)
     return "Username must be 3-20 characters long";
 
-  const isValidLetters = /^[a-zA-Z0-9_-]+$/.test(input);
+  const isValidLetters = /^[a-zA-Z0-9_ -]+$/.test(input);
 
   if (!isValidLetters)
-    return "Invalid characters, only a-z, A-Z, 0-9, -, _ are allowed";
+    return "Invalid characters, only a-z, A-Z, 0-9, -, _, space are allowed";
 
   if (reserved.includes(input.toLowerCase())) return "Username is reserved";
 
